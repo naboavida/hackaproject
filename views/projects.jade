@@ -1,0 +1,12 @@
+div
+  h2 My Projects
+  ul
+    li
+      a(href='/') Home
+    li
+      a(href='/projects') Projects
+    li
+      a(href='/addProject') Add a new Project
+  div
+    li(ng-repeat="project in projects")
+      a(href='/dashboard/{{project.id}}') {{project.title}} {{project.area}}

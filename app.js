@@ -37,16 +37,35 @@ if (app.get('env') === 'production') {
 }
 
 
+
 /**
  * Routes
  */
 
 // serve index and view partials
 app.get('/', routes.index);
+// app.get('/dashboard', routes.dashboard);
+app.get('/projects', routes.projects);
+app.get('/addProject', routes.addProject);
+app.get('/dashboard/:pid', routes.dashboard);
+
 app.get('/partials/:name', routes.partials);
 
-// JSON API
-app.get('/api/name', api.name);
+
+
+// API
+
+app.get('/api/projects', api.getProjects);
+app.post('/api/projects', api.addProject);
+
+app.get('/api/dashboard/:pid', api.getDashboard);
+
+app.get('/api/posts', api.posts);
+
+app.get('/api/post/:id', api.post);
+app.post('/api/post', api.addPost);
+app.put('/api/post/:id', api.editPost);
+app.delete('/api/post/:id', api.deletePost);
 
 // redirect all others to the index (HTML5 history)
 app.get('*', routes.index);

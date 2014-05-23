@@ -1,9 +1,135 @@
-/*
- * Serve JSON to our AngularJS client
- */
+// initialize our faux database
+var data = {
+  "posts": [
+    {
+      "title": "Lorem ipsum",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "title": "Sed egestas",
+      "text": "Sed egestas, ante et vulputate volutpat, eros pede semper est, vitae luctus metus libero eu augue. Morbi purus libero, faucibus adipiscing, commodo quis, gravida id, est. Sed lectus."
+    }
+  ]
+};
 
-exports.name = function (req, res) {
-  res.json({
-    name: 'Bob'
+// GET
+
+exports.posts = function (req, res) {
+  var posts = [];
+  data.posts.forEach(function (post, i) {
+    posts.push({
+      id: i,
+      title: post.title,
+      text: post.text.substr(0, 50) + '...'
+    });
   });
+  res.json({
+    posts: posts
+  });
+};
+
+exports.post = function (req, res) {
+  var id = req.params.id;
+  if (id >= 0 && id < data.posts.length) {
+    res.json({
+      post: data.posts[id]
+    });
+  } else {
+    res.json(false);
+  }
+};
+
+// POST
+exports.addPost = function (req, res) {
+  data.posts.push(req.body);
+  res.json(req.body);
+};
+
+// PUT
+exports.editPost = function (req, res) {
+  var id = req.params.id;
+
+  if (id >= 0 && id < data.posts.length) {
+    data.posts[id] = req.body;
+    res.json(true);
+  } else {
+    res.json(false);
+  }
+};
+
+// DELETE
+exports.deletePost = function (req, res) {
+  var id = req.params.id;
+
+  if (id >= 0 && id < data.posts.length) {
+    data.posts.splice(id, 1);
+    res.json(true);
+  } else {
+    res.json(false);
+  }
+};
+
+
+
+
+
+
+
+
+var projects = [{id:0, title:'California', area:'123'},{id:1, title:'Texas', area:'321'}];
+
+
+
+// util methods
+function findMaxProjectId() {
+  var highest = 0;
+  for (id in projects) {
+    if (projects.hasOwnProperty(id)) {
+      if(id > highest)
+        highest = id;
+    }
+  }
+  return parseInt(highest);
+}
+
+
+function findTitleById(pid) {
+  var result = 'NOT FOUND';
+  console.log(projects);
+  projects.forEach(function(project){
+    if(project.hasOwnProperty('id') ){
+      console.log(project.id + " " + pid);
+      console.log(project.id == pid);
+      if(project.id == pid){
+        result = project.title;
+      }
+    }
+  });
+  return result;
+}
+
+
+// get
+exports.getProjects = function(req, res){
+  res.json(projects);
+};
+
+// post
+exports.addProject = function(req, res){
+  console.log('API call: addProject');
+  req.body.id = findMaxProjectId()+1;
+  console.log(req.body);
+  // projects.push({title:'New York', area:'231'});
+  projects.push(req.body);
+  // res.json(req.body);
+  res.json(projects);
+};
+
+
+exports.getDashboard = function(req, res){
+  console.log('API call: getDashboard');
+  var pid = req.params.pid;
+  var title = findTitleById(pid);
+  console.log('title is: '+title);
+  res.json(title);
 };

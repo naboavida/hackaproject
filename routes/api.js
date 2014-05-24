@@ -83,6 +83,8 @@ var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "val
 var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4}] }, {"iid":1, "parameters":[{"parmid":0, "title":"ferro", "value":123}] } ];
 
 
+var nextIID = 2;
+
 // util methods
 function findMaxProjectId() {
   var highest = 0;
@@ -128,14 +130,31 @@ function findDashboardIndicatorsById(pid) {
 }
 
 
-function findIndicatorParametersById(pid) {
+
+function findIndicatorById(iid){
+  var result = {};
+  // console.log(projects);
+  dashboards.forEach(function(dashboard){
+    if(dashboard.hasOwnProperty('id') ){
+      dashboard.indicators.forEach(function(indicator){
+        if(indicator.iid == iid){
+          result = indicator;
+        }
+      });
+    }
+  });
+  return result;
+}
+
+
+function findIndicatorParametersByIId(iid) {
   var result = {};
   // console.log(projects);
   indicators.forEach(function(indicator){
     if(indicator.hasOwnProperty('iid') ){
       // console.log(project.id + " " + pid);
       // console.log(project.id == pid);
-      if(indicator.iid == pid){
+      if(indicator.iid == iid){
         result = indicator.parameters;
       }
     }
@@ -157,6 +176,10 @@ exports.addProject = function(req, res){
   console.log(req.body);
   // projects.push({title:'New York', area:'231'});
   projects.push(req.body);
+
+  dashboards.push({"id":req.body.id, "indicators":[] });
+  console.log(dashboards);
+
   // res.json(req.body);
   res.json(projects);
 };
@@ -180,9 +203,43 @@ exports.getDashboard = function(req, res){
 
 exports.getIndicator = function(req, res){
   console.log('API call: getIndicator');
+  var iid = req.params.iid;
+  var result = {};
+
+  var indicator = findIndicatorById(iid);
+  var parameters = findIndicatorParametersByIId(iid);
+
+  result.indicator = indicator;
+  result.parameters = parameters;
+
+  res.json(result);
+};
+
+exports.addIndicator = function(req, res){
+  console.log('API call: addIndicator');
+  console.log(req.body);
+
   var pid = req.params.pid;
 
-  var parameters = findIndicatorParametersById(pid);
+  req.body.iid = nextIID;
+  nextIID++;
 
-  res.json(parameters);
+  var indicators = findDashboardIndicatorsById(pid);
+  indicators.push(req.body);
+  console.log(indicators);
+
+
+  res.json(indicators);
 };
+
+exports.addDashboardWidget = function(req, res){
+  console.log('API call: addDashboardWidget');
+  var pid = req.params.pid;
+
+  console.log(req.body);
+  // projects.push({title:'New York', area:'231'});
+  projects.push(req.body);
+  // res.json(req.body);
+  res.json(projects);
+};
+

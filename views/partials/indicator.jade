@@ -9,6 +9,12 @@ div
 			a(href='/dashboard/{{pid}}') Dashboard
 		li
 			p Indicator
-	li(ng-repeat='parameter in parameters')
-		p {{parameter.title}} {{parameter.value}}
-			a(href='/parameter/{{parameter.parmid}}') Open
+	div
+		h5 Indicator data
+		p Title: {{indicator.title}}
+		p Value: {{indicator.value}}
+	div
+		h5 Indicator parms
+		li(ng-repeat='parameter in parameters')
+			p {{parameter.title}} {{parameter.value}}
+				a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Open

@@ -1,0 +1,12 @@
+div(style='width:400px;margin-left:auto;margin-right:auto;margin-top:100px;')
+	h1 Add a Widget
+	div(ng-controller="DashboardCtrl")
+		li(ng-repeat='indicator in indicators')
+			p {{indicator.title}} {{indicator.value}}
+		//- form(action='/addProject', method='post')
+		div
+			p: input(placeholder='Title', name='title', ng-model='form.title')
+			p: input(placeholder='Value', name='value', ng-model='form.value')
+			p: button(ng-click='submitNewWidget()') Adicionar
+	p: a(href='/dashboard/{{pid}}') Back
+	p: a(href='/') Home

@@ -16,15 +16,19 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
         templateUrl: 'addProject',
         controller: ProjectsCtrl
       }).
+      when('/addWidget/:pid', {
+        templateUrl: 'partials/addWidget',
+        controller: DashboardCtrl
+      }).
       when('/dashboard/:pid', {
         templateUrl: 'partials/dashboard',
         controller: DashboardCtrl
       }).
-      when('/indicator/:pid', {
+      when('/indicator/:pid/:iid', {
         templateUrl: 'partials/indicator',
         controller: IndicatorCtrl
       }).
-      when('/parameter/:pid', {
+      when('/parameter/:pid/:iid/:parmid', {
         templateUrl: 'partials/parameter',
         controller: IndicatorCtrl
       }).

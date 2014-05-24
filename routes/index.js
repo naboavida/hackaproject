@@ -17,9 +17,9 @@ exports.project = function (req, res) {
   res.render('project/' + name);
 };
 
-exports.dashboard = function (req, res) {
-	res.render('dashboard');
-};
+// exports.dashboard = function (req, res) {
+// 	res.render('dashboard');
+// };
 
 exports.projects = function (req, res) {
 	res.render('projects');
@@ -30,3 +30,6 @@ exports.addProject = function (req, res) {
 };
 
 
+// exports.addWidget = function (req, res) {
+// 	res.render('addWidget');
+// };

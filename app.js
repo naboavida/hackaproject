@@ -47,7 +47,8 @@ app.get('/', routes.index);
 // app.get('/dashboard', routes.dashboard);
 app.get('/projects', routes.projects);
 app.get('/addProject', routes.addProject);
-app.get('/dashboard/:pid', routes.dashboard);
+// app.get('/addWidget/:pid', routes.addWidget);
+// app.get('/dashboard/:pid', routes.dashboard);
 
 app.get('/partials/:name', routes.partials);
 
@@ -59,7 +60,8 @@ app.get('/api/projects', api.getProjects);
 app.post('/api/projects', api.addProject);
 
 app.get('/api/dashboard/:pid', api.getDashboard);
-app.get('/api/indicator/:pid', api.getIndicator);
+app.get('/api/indicator/:iid', api.getIndicator);
+app.post('/api/indicator/:pid', api.addIndicator);
 
 app.get('/api/posts', api.posts);
 

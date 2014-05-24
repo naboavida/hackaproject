@@ -139,6 +139,23 @@ function DashboardCtrl($scope, $http, $routeParams){
     });
 
 
+    $scope.submitNewWidget = function() {
+      console.log('submitNewWidget');
+      $http.post('/api/indicator/'+$scope.pid, $scope.form).
+        success(function(data, status) {
+          // console.log("yeah write!" + status);
+          console.log(data);
+          $scope.indicators = data;
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+
+      // $scope.projects.push($scope.form);
+      $scope.form = {};
+      // fazer o post
+      // obter o indicators q este post retorna
+    }
   
 };
 
@@ -146,13 +163,17 @@ function DashboardCtrl($scope, $http, $routeParams){
 function IndicatorCtrl($scope, $http, $routeParams){
   console.log('IndicatorCtrl');
   $scope.pid = $routeParams.pid;
+  $scope.iid = $routeParams.iid;
+  $scope.parmid = $routeParams.parmid;
+  console.log('pid: '+$scope.pid + ' iid: ' + $scope.iid + ' parmid: '+$scope.parmid);
 
-  $http.get('/api/indicator/'+$scope.pid).
+  $http.get('/api/indicator/'+$scope.iid).
     success(function(data, status) {
       console.log("yeah read!");
       console.log(data);
       // $scope.project = data.title;
-      $scope.parameters = data;
+      $scope.indicator = data.indicator;
+      $scope.parameters = data.parameters;
       // console.log($scope.indicators);
     }).
     error(function (data, status) {

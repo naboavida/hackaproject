@@ -8,8 +8,10 @@ div
 		li
 			a(href='/dashboard/{{pid}}') Dashboard
 		li
-			a(href='/indicator/{{pid}}') Indicator
+			a(href='/indicator/{{pid}}/{{iid}}') Indicator
 		li
 			p Parameter
 	div
-		p now the parpameters
+		h5 Parameter data
+		p Title: {{parameter.title}}
+		p Value: {{parameter.value}}

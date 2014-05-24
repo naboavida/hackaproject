@@ -1,6 +1,6 @@
 body{
-	background-color: #231f20;
-	color: white;
+    background-color: #231f20;
+    color: white;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
 
@@ -21,7 +21,7 @@ header ul{
 .item{
     background-color: #444444;
     border: 1px #231f20 solid;
-	color:#292E37;
+    color:#292E37;
     color: white;
     border-radius: 2px;
 }

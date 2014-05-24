@@ -7,6 +7,7 @@ div(style='width:400px;margin-left:auto;margin-right:auto;margin-top:100px;')
 		div
 			p: input(placeholder='Title', name='title', ng-model='form.title')
 			p: input(placeholder='Value', name='value', ng-model='form.value')
-			p: button(ng-click='submitNewParameter()') Adicionar
+			p: input(placeholder='Unit', name='unit', ng-model='form.unit')
+			p: button(ng-click='submitNewParameter()') Add
 	p: a(href='/indicator/{{pid}}/{{iid}}') Back
 	p: a(href='/') Home

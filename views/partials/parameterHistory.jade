@@ -11,10 +11,18 @@ div
 			a(href='/indicator/{{pid}}/{{iid}}') Indicator
 		li
 			a(href='') Parameter
-	div
-		p: a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Goals
-		p History
-	div
-		h5 Parameter history
-		p Title: {{parameter.title}}
-		p Value: {{parameter.value}}
+	div.mainDiv
+		div.leftDiv
+			div.leftDivContent
+				div#map(ng-controller="DemoController")
+					leaflet(center="madeira",width="500",height="400",markers="markers")
+		div.rightDiv
+			div
+				p: a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Goals
+				p History
+			div
+				h5 Parameter history
+			//- 	p Title: {{parameter.title}}
+			//- 	p Value: {{parameter.value}}
+			div(ng-controller="ExampleCtrl", style='width:600px; margin-left:auto; margin-right:auto;')
+				nvd3-line-chart(data="exampleData",width='600', height='300',showXAxis="true",showYAxis="true",tooltips="true",interactive="true")

@@ -8,17 +8,36 @@ div
 		li
 			a(href='') Dashboard
 	div
-	h5 dashboard {{project}} {{pid}}
-	ul.list-item
-		li.item(ng-repeat='indicator in indicators')
-			div.widgetContent
-				h3.widgetTitle {{indicator.title}}
-				div.line
-					div.line-item.value {{indicator.value}}
-					div.line-item.unit mg/ha
-				div.line
-					a(href='/indicator/{{pid}}/{{indicator.iid}}') Open
-		li.item.item-to-add
-			a(href='/addWidget/{{pid}}')
-				div.widgetContent
-					p Add a new Widget
+		h5(style='text-align:center;') Dashboard {{project}}
+	div.mainDiv
+		div.leftDiv
+			div.leftDivContent
+				div#map(ng-controller="DemoController")
+					leaflet(center="madeira",width="500",height="400",markers="markers")
+					//- leaflet(center="madeira",width="500",height="400",markers="markers",event-broadcast="events")
+		div.rightDiv
+			ul.list-item
+				li.item(ng-repeat='indicator in indicators')
+					div.widgetContent
+						h3.widgetTitle {{indicator.title}}
+						div.line
+							div.line-item.value {{indicator.value}}
+							div.line-item.unit {{indicator.unit}}
+						div.widgetChart(ng-controller='BulletCtrl')
+							nvd3-bullet-chart(data='bulletData', width='100', height='10', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+						div.line
+							a(href='/indicator/{{pid}}/{{indicator.iid}}') Open
+				li.item
+					div.widgetContent
+						h3.widgetTitle Next Activity
+						div.line
+							div.line-item.value 27th
+							div.line-item.unit May 2014
+						div.line
+							img.line-item(src='pics/cal.png',style='width:50px;height:50px;')
+						div.line
+							a(href='/calendar/{{pid}}') Open
+				li.item.item-to-add
+					a(href='/addWidget/{{pid}}')
+						div.widgetContent
+							h3.widgetTitle Add a new Widget

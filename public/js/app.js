@@ -1,14 +1,14 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives']).
+angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'nvd3ChartDirectives', 'leaflet-directive', 'ui.calendar']).
   config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     $routeProvider.
       when('/', {
         templateUrl: 'partials/index',
         controller: IndexCtrl
       }).
-      when('/projects', {
+      when('/projects/', {
         templateUrl: 'projects',
         controller: ProjectsCtrl
       }).
@@ -39,6 +39,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
       when('/addParameter/:pid/:iid', {
         templateUrl: 'partials/addParameter',
         controller: ParameterCtrl
+      }).
+      when('/calendar/:pid', {
+        templateUrl: 'partials/calendar',
+        controller: CalendarCtrl
       }).
       when('/addPost', {
         templateUrl: 'partials/addPost',

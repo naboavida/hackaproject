@@ -9,22 +9,37 @@ div
 			a(href='/dashboard/{{pid}}') Dashboard
 		li
 			a(href='') Indicator
-	ul.list-item
-		li.item.big-item
-			div.widgetContent
-				h3.widgetTitle {{indicator.title}}
-				div.line
-					div.line-item.value {{indicator.value}}
-					div.line-item.unit mg/ha
-		li.item(ng-repeat='parameter in parameters')
-			div.widgetContent
-				h3.widgetTitle {{parameter.title}}
-				div.line
-					div.line-item.value {{parameter.value}}
-					div.line-item.unit mg/ha
-				div.line
-					a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Open
-		li.item.item-to-add
-			a(href='/addParameter/{{pid}}/{{iid}}')
-				div.widgetContent
-					p Add a new Parameter
+	div.mainDiv
+		div.leftDiv
+			div.leftDivContent
+				div#map(ng-controller="DemoController")
+					leaflet(center="madeira",width="500",height="400",markers="markers")
+		div.rightDiv
+			ul.list-item
+				li.item.big-item
+					div.widgetContent
+						h3.widgetTitle {{indicator.title}}
+						div.line
+							div.line-item.value {{indicator.value}}
+							div.line-item.unit {{indicator.unit}}
+						div.semaphoreChart
+							svg(width="150px", height="60px")
+								path(d="M 1 1 L 149 1 L 149 59 L 1 59 L 1 1", 
+								    stroke="rgba(170, 170, 51, 0.5)", fill="#ee9", 
+								    stroke-width="1")
+								circle(style='stroke-width:5;stroke:rgba(55,55,55,0.25)', cx="40", cy="30", r="20", fill="grey")
+								circle(style='stroke-width:5;stroke:rgba(55,255,55,0.25)', cx="110", cy="30", r="20", fill="green")
+				li.item(ng-repeat='parameter in parameters')
+					div.widgetContent
+						h3.widgetTitle {{parameter.title}}
+						div.line
+							div.line-item.value {{parameter.value}}
+							div.line-item.unit {{parameter.unit}}
+						div.widgetChart(ng-controller='BulletCtrl')
+							nvd3-bullet-chart(data='bulletData', width='100', height='10', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+						div.line
+							a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Open
+				li.item.item-to-add
+					a(href='/addParameter/{{pid}}/{{iid}}')
+						div.widgetContent
+							h3.widgetTitle Add a new Parameter

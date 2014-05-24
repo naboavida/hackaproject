@@ -11,10 +11,37 @@ div
 			a(href='/indicator/{{pid}}/{{iid}}') Indicator
 		li
 			a(href='') Parameter
-	div
-		p Goals
-		p: a(href='/parameterHistory/{{pid}}/{{iid}}/{{parmid}}') History
-	div
-		h5 Parameter goals
-		p Title: {{parameter.title}}
-		p Value: {{parameter.value}}
+	div.mainDiv
+		div.leftDiv
+			div.leftDivContent
+				div#map(ng-controller="DemoController")
+					leaflet(center="madeira",width="500",height="400",markers="markers")
+		div.rightDiv
+			div
+				p Goals
+				p: a(href='/parameterHistory/{{pid}}/{{iid}}/{{parmid}}') History
+			div.widgetChartLarge(ng-controller='BulletCtrl')
+				nvd3-bullet-chart(data='bulletDataRead', width='200', height='20', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+			ul.list-item
+				li.item
+					div.widgetContent
+						h3.widgetTitle Year 0
+						div.line
+							div.line-item.value {{parameter.value*2}}
+							div.line-item.unit {{parameter.unit}}
+				li.item
+					div.widgetContent
+						h3.widgetTitle Current
+						div.line
+							div.line-item.value {{parameter.value}}
+							div.line-item.unit {{parameter.unit}}
+				li.item
+					div.widgetContent
+						h3.widgetTitle Objective
+						div.line
+							div.line-item.value {{parameter.value/2}}
+							div.line-item.unit {{parameter.unit}}
+			//- div
+			//- 	h5 Parameter goals
+			//- 	p Title: {{parameter.title}}
+			//- 	p Value: {{parameter.value}}

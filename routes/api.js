@@ -76,16 +76,16 @@ exports.deletePost = function (req, res) {
 
 // DATA
 
-var projects = [{id:0, title:'California', area:'123'},{id:1, title:'Texas', area:'321'}];
+var projects = [{id:0, title:'Madeira', area:'123'},{id:1, title:'Texas', area:'321'}];
 
-var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":1}, {"iid":2, "title":"Water Baad", "value":44}] }, {"id":1, "indicators":[{"iid":1, "title":"Water Freshness", "value":4}] }];
+var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "coord":[{"x":32.666667, "y": -16.85}]}, {"iid":2, "title":"Localização", "value":"Monte", "unit":'', "coord":[{"x":32.666667, "y": -16.95}]}] }, {"id":1, "indicators":[{"iid":1, "title":"Budget", "value":4, "unit":"Eur"}] }];
 
-var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4}] }, 
-                  {"iid":1, "parameters":[{"parmid":0, "title":"ferro", "value":123}] },
+var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4, "unit":""}] }, 
+                  {"iid":1, "parameters":[{"parmid":0, "title":"Ferro", "value":123, "unit":"mg/l"}] },
                   {"iid":2, "parameters":[] }  ];
 
 
-var nextIID = 2;
+var nextIID = 3;
 var nextParmId = 2;
 
 
@@ -179,6 +179,27 @@ function findParameterByParmId(iid, parmid){
   return result;
 }
 
+
+
+function getLocationsByPId(pid){
+  var result = [];
+  // console.log(projects);
+  dashboards.forEach(function(indicator){
+    if(indicator.hasOwnProperty('id') ){
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
+      if(indicator.id == pid){
+        // console.log(indicator.indicators);
+        indicator.indicators.forEach(function(ind){
+          console.log(ind.coord);
+          if(ind.coord != undefined)
+            result.push( {"x": ind.coord[0].x, "y": ind.coord[0].y } );
+        });
+      }
+    }
+  });
+  return result;
+}
 
 
 // METHODS:
@@ -306,4 +327,14 @@ exports.addParameter = function(req, res){
   console.log(indicators);
 
   res.json(parameters);
+};
+
+
+exports.geoapi = function(req, res){
+  console.log('API call: geoapi');
+  var pid = req.params.pid;
+  console.log(pid);
+  var loc = getLocationsByPId(pid);
+  console.log(loc);
+  res.json(loc);
 };

@@ -9,12 +9,22 @@ div
 			a(href='/dashboard/{{pid}}') Dashboard
 		li
 			p Indicator
-	div
-		h5 Indicator data
-		p Title: {{indicator.title}}
-		p Value: {{indicator.value}}
-	div
-		h5 Indicator parms
-		li(ng-repeat='parameter in parameters')
-			p {{parameter.title}} {{parameter.value}}
-				a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Open
+	ul.list-item
+		li.item.big-item
+			div.widgetContent
+				h3.widgetTitle {{indicator.title}}
+				div.line
+					div.line-item.value {{indicator.value}}
+					div.line-item.unit mg/ha
+		li.item(ng-repeat='parameter in parameters')
+			div.widgetContent
+				h3.widgetTitle {{parameter.title}}
+				div.line
+					div.line-item.value {{parameter.value}}
+					div.line-item.unit mg/ha
+				div.line
+					a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Open
+		li.item.item-to-add
+			a(href='/addParameter/{{pid}}/{{iid}}')
+				div.widgetContent
+					p Add a new Parameter

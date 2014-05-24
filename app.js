@@ -63,6 +63,9 @@ app.get('/api/dashboard/:pid', api.getDashboard);
 app.get('/api/indicator/:iid', api.getIndicator);
 app.post('/api/indicator/:pid', api.addIndicator);
 
+app.get('/api/parameter/:iid/:parmid', api.getParameter);
+app.post('/api/parameter/:pid/:iid', api.addParameter);
+
 app.get('/api/posts', api.posts);
 
 app.get('/api/post/:id', api.post);

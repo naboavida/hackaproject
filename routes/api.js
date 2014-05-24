@@ -74,18 +74,22 @@ exports.deletePost = function (req, res) {
 
 
 
-
+// DATA
 
 var projects = [{id:0, title:'California', area:'123'},{id:1, title:'Texas', area:'321'}];
 
-var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":1}] }, {"id":1, "indicators":[{"iid":1, "title":"Water Freshness", "value":4}] }];
+var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":1}, {"iid":2, "title":"Water Baad", "value":44}] }, {"id":1, "indicators":[{"iid":1, "title":"Water Freshness", "value":4}] }];
 
-var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4}] }, {"iid":1, "parameters":[{"parmid":0, "title":"ferro", "value":123}] } ];
+var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4}] }, 
+                  {"iid":1, "parameters":[{"parmid":0, "title":"ferro", "value":123}] },
+                  {"iid":2, "parameters":[] }  ];
 
 
 var nextIID = 2;
+var nextParmId = 2;
 
-// util methods
+
+// UTILS
 function findMaxProjectId() {
   var highest = 0;
   for (id in projects) {
@@ -148,12 +152,13 @@ function findIndicatorById(iid){
 
 
 function findIndicatorParametersByIId(iid) {
-  var result = {};
+  var result = [];
   // console.log(projects);
   indicators.forEach(function(indicator){
     if(indicator.hasOwnProperty('iid') ){
-      // console.log(project.id + " " + pid);
-      // console.log(project.id == pid);
+      // console.log(indicator.id + " " + iid);
+      // console.log(indicator.id == iid);
+      console.log(indicator);
       if(indicator.iid == iid){
         result = indicator.parameters;
       }
@@ -161,6 +166,22 @@ function findIndicatorParametersByIId(iid) {
   });
   return result;
 }
+
+
+
+function findParameterByParmId(iid, parmid){
+  var result = {};
+  var parameters = findIndicatorParametersByIId(iid);
+  parameters.forEach(function(parameter){
+    if(parameter.parmid == parmid)
+      result = parameter;
+  });
+  return result;
+}
+
+
+
+// METHODS:
 
 
 
@@ -173,12 +194,12 @@ exports.getProjects = function(req, res){
 exports.addProject = function(req, res){
   console.log('API call: addProject');
   req.body.id = findMaxProjectId()+1;
-  console.log(req.body);
+  // console.log(req.body);
   // projects.push({title:'New York', area:'231'});
   projects.push(req.body);
 
   dashboards.push({"id":req.body.id, "indicators":[] });
-  console.log(dashboards);
+  // console.log(dashboards);
 
   // res.json(req.body);
   res.json(projects);
@@ -189,10 +210,10 @@ exports.getDashboard = function(req, res){
   console.log('API call: getDashboard');
   var pid = req.params.pid;
   var title = findTitleById(pid);
-  console.log('title is: '+title);
+  // console.log('title is: '+title);
 
   var indicators = findDashboardIndicatorsById(pid);
-  console.log(indicators);
+  // console.log(indicators);
 
   var result = {};
   result.title = title;
@@ -217,19 +238,22 @@ exports.getIndicator = function(req, res){
 
 exports.addIndicator = function(req, res){
   console.log('API call: addIndicator');
-  console.log(req.body);
+  // console.log(req.body);
 
   var pid = req.params.pid;
 
   req.body.iid = nextIID;
   nextIID++;
 
-  var indicators = findDashboardIndicatorsById(pid);
-  indicators.push(req.body);
-  console.log(indicators);
+  var indicatorsResult = findDashboardIndicatorsById(pid);
+  indicatorsResult.push(req.body);
+
+  // init parameters for iid
+  indicators.push( {"iid":req.body.iid, "parameters":[]} );
+  // console.log(indicators);
 
 
-  res.json(indicators);
+  res.json(indicatorsResult);
 };
 
 exports.addDashboardWidget = function(req, res){
@@ -243,3 +267,43 @@ exports.addDashboardWidget = function(req, res){
   res.json(projects);
 };
 
+exports.getParameter = function(req, res){
+  console.log('API call: getParameter');
+  var iid = req.params.iid;
+  var parmid = req.params.parmid;
+  var result = {};
+
+  var parameter = findParameterByParmId(iid, parmid);
+
+  result = parameter;
+
+  res.json(result);
+};
+
+
+exports.addParameter = function(req, res){
+  console.log('API call: addParameter');
+  var result = {};
+  var pid = req.params.pid;
+  var iid = req.params.iid;
+  console.log("pid: "+pid+" iid: "+iid);
+  // console.log(req.body);
+  req.body.parmid = nextParmId;
+  nextParmId++;
+
+  var parameters = findIndicatorParametersByIId(iid);
+  
+  console.log("Pushing parm into parms");
+  console.log(parameters);
+  parameters.push(req.body);
+
+  console.log(parameters);
+
+
+  console.log("Dashboards");
+  console.log(dashboards);
+  console.log("Indicators");
+  console.log(indicators);
+
+  res.json(parameters);
+};

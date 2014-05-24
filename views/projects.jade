@@ -10,9 +10,17 @@ block body
         p Projects
         
     div
-      li(ng-repeat="project in projects")
-        a(href='/dashboard/{{project.id}}') {{project.title}} {{project.area}}
-      a(href='/addProject') Add a new Project
+      ul.menuItem.menuItemLarge
+        li.listItem.listItemLarge(ng-repeat="project in projects")
+          a(href='/dashboard/{{project.id}}')
+            div.innerItem.innerItemBig
+              div
+                p(style='color:#eee;'){{project.title}}
+                p(style='margin-top:5px;font-size:12px;'){{project.area}} m2
+        li.listItem.listItemLarge.project-item.add-project
+          a(href='/addProject')
+            div.innerItem.innerItemBig
+              p.innerItemBigParagraph Add a new Project
 
   script(src='js/lib/angular/angular.js')
   script(src='js/app.js')

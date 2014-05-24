@@ -180,3 +180,60 @@ function IndicatorCtrl($scope, $http, $routeParams){
       $scope.data = data || "Request failed";
     });
 };
+
+
+function ParameterCtrl($scope, $http, $routeParams){
+  console.log('ParameterCtrl');
+  $scope.pid = $routeParams.pid;
+  $scope.iid = $routeParams.iid;
+  $scope.parmid = $routeParams.parmid;
+  console.log('pid: '+$scope.pid + ' iid: ' + $scope.iid + ' parmid: '+$scope.parmid);
+
+  $http.get('/api/indicator/'+$scope.iid).
+    success(function(data, status) {
+      // console.log("yeah read!");
+      // console.log(data);
+      // $scope.project = data.title;
+      $scope.indicator = data.indicator;
+      $scope.parameters = data.parameters;
+      // console.log($scope.indicators);
+    }).
+    error(function (data, status) {
+      $scope.data = data || "Request failed";
+    });
+
+
+    if($scope.parmid != undefined){
+      // para view get parameter
+      $http.get('/api/parameter/'+$scope.iid+'/'+$scope.parmid).
+        success(function(data, status) {
+          console.log("yeah read!");
+          console.log(data);
+          // $scope.project = data.title;
+          $scope.parameter = data;
+          // console.log($scope.indicators);
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+    }
+  
+
+  $scope.submitNewParameter = function() {
+      console.log('submitNewParameter');
+      $http.post('/api/parameter/'+$scope.pid+'/'+$scope.iid, $scope.form).
+        success(function(data, status) {
+          // console.log("yeah write!" + status);
+          console.log(data);
+          $scope.parameters = data;
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+
+      // $scope.projects.push($scope.form);
+      $scope.form = {};
+      // fazer o post
+      // obter o indicators q este post retorna
+    }
+};

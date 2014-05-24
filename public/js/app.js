@@ -30,7 +30,15 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
       }).
       when('/parameter/:pid/:iid/:parmid', {
         templateUrl: 'partials/parameter',
-        controller: IndicatorCtrl
+        controller: ParameterCtrl
+      }).
+      when('/parameterHistory/:pid/:iid/:parmid', {
+        templateUrl: 'partials/parameterHistory',
+        controller: ParameterCtrl
+      }).
+      when('/addParameter/:pid/:iid', {
+        templateUrl: 'partials/addParameter',
+        controller: ParameterCtrl
       }).
       when('/addPost', {
         templateUrl: 'partials/addPost',

@@ -9,7 +9,16 @@ div
 			p Dashboard
 	div
 	h5 dashboard {{project}} {{pid}}
-	li(ng-repeat='indicator in indicators')
-		p {{indicator.title}} {{indicator.value}}
-			a(href='/indicator/{{pid}}/{{indicator.iid}}') Open
-	a(href='/addWidget/{{pid}}') Add a new Widget
+	ul.list-item
+		li.item(ng-repeat='indicator in indicators')
+			div.widgetContent
+				h3.widgetTitle {{indicator.title}}
+				div.line
+					div.line-item.value {{indicator.value}}
+					div.line-item.unit mg/ha
+				div.line
+					a(href='/indicator/{{pid}}/{{indicator.iid}}') Open
+		li.item.item-to-add
+			a(href='/addWidget/{{pid}}')
+				div.widgetContent
+					p Add a new Widget

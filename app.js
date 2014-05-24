@@ -59,6 +59,7 @@ app.get('/api/projects', api.getProjects);
 app.post('/api/projects', api.addProject);
 
 app.get('/api/dashboard/:pid', api.getDashboard);
+app.get('/api/indicator/:pid', api.getIndicator);
 
 app.get('/api/posts', api.posts);
 

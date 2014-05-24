@@ -4,9 +4,9 @@ div
     li
       a(href='/') Home
     li
-      a(href='/projects') Projects
-    li
-      a(href='/addProject') Add a new Project
+      p Projects
+      
   div
     li(ng-repeat="project in projects")
       a(href='/dashboard/{{project.id}}') {{project.title}} {{project.area}}
+    a(href='/addProject') Add a new Project

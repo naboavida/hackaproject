@@ -20,6 +20,14 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
         templateUrl: 'partials/dashboard',
         controller: DashboardCtrl
       }).
+      when('/indicator/:pid', {
+        templateUrl: 'partials/indicator',
+        controller: IndicatorCtrl
+      }).
+      when('/parameter/:pid', {
+        templateUrl: 'partials/parameter',
+        controller: IndicatorCtrl
+      }).
       when('/addPost', {
         templateUrl: 'partials/addPost',
         controller: AddPostCtrl

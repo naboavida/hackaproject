@@ -1,0 +1,14 @@
+div
+	h2 Indicator
+	ul
+		li
+			a(href='/') Home
+		li
+			a(href='/projects') Projects
+		li
+			a(href='/dashboard/{{pid}}') Dashboard
+		li
+			p Indicator
+	li(ng-repeat='parameter in parameters')
+		p {{parameter.title}} {{parameter.value}}
+			a(href='/parameter/{{parameter.parmid}}') Open

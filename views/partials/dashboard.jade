@@ -1,9 +1,14 @@
 div
-  h2 dashboard
-    ul
-      li
-        a(href='/') Home
-      li
-        a(href='/projects') Projects
-    div
-      h5 dashboard {{project}} {{pid}}
+	h2 dashboard
+	ul
+		li
+			a(href='/') Home
+		li
+			a(href='/projects') Projects
+		li
+			p Dashboard
+	div
+	h5 dashboard {{project}} {{pid}}
+	li(ng-repeat='indicator in indicators')
+		p {{indicator.title}} {{indicator.value}}
+			a(href='/indicator/{{pid}}') Open

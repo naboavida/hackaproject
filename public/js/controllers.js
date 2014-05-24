@@ -128,9 +128,11 @@ function DashboardCtrl($scope, $http, $routeParams){
   
   $http.get('/api/dashboard/'+$scope.pid).
     success(function(data, status) {
-      console.log("yeah read!");
-      console.log(data);
-      $scope.project = data;
+      // console.log("yeah read!");
+      // console.log(data);
+      $scope.project = data.title;
+      $scope.indicators = data.indicators;
+      // console.log($scope.indicators);
     }).
     error(function (data, status) {
       $scope.data = data || "Request failed";
@@ -138,4 +140,22 @@ function DashboardCtrl($scope, $http, $routeParams){
 
 
   
+};
+
+
+function IndicatorCtrl($scope, $http, $routeParams){
+  console.log('IndicatorCtrl');
+  $scope.pid = $routeParams.pid;
+
+  $http.get('/api/indicator/'+$scope.pid).
+    success(function(data, status) {
+      console.log("yeah read!");
+      console.log(data);
+      // $scope.project = data.title;
+      $scope.parameters = data;
+      // console.log($scope.indicators);
+    }).
+    error(function (data, status) {
+      $scope.data = data || "Request failed";
+    });
 };

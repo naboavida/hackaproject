@@ -78,6 +78,9 @@ exports.deletePost = function (req, res) {
 
 var projects = [{id:0, title:'California', area:'123'},{id:1, title:'Texas', area:'321'}];
 
+var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":1}] }, {"id":1, "indicators":[{"iid":1, "title":"Water Freshness", "value":4}] }];
+
+var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4}] }, {"iid":1, "parameters":[{"parmid":0, "title":"ferro", "value":123}] } ];
 
 
 // util methods
@@ -95,11 +98,11 @@ function findMaxProjectId() {
 
 function findTitleById(pid) {
   var result = 'NOT FOUND';
-  console.log(projects);
+  // console.log(projects);
   projects.forEach(function(project){
     if(project.hasOwnProperty('id') ){
-      console.log(project.id + " " + pid);
-      console.log(project.id == pid);
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
       if(project.id == pid){
         result = project.title;
       }
@@ -107,6 +110,39 @@ function findTitleById(pid) {
   });
   return result;
 }
+
+
+function findDashboardIndicatorsById(pid) {
+  var result = {};
+  // console.log(projects);
+  dashboards.forEach(function(dashboard){
+    if(dashboard.hasOwnProperty('id') ){
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
+      if(dashboard.id == pid){
+        result = dashboard.indicators;
+      }
+    }
+  });
+  return result;
+}
+
+
+function findIndicatorParametersById(pid) {
+  var result = {};
+  // console.log(projects);
+  indicators.forEach(function(indicator){
+    if(indicator.hasOwnProperty('iid') ){
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
+      if(indicator.iid == pid){
+        result = indicator.parameters;
+      }
+    }
+  });
+  return result;
+}
+
 
 
 // get
@@ -131,5 +167,22 @@ exports.getDashboard = function(req, res){
   var pid = req.params.pid;
   var title = findTitleById(pid);
   console.log('title is: '+title);
-  res.json(title);
+
+  var indicators = findDashboardIndicatorsById(pid);
+  console.log(indicators);
+
+  var result = {};
+  result.title = title;
+  result.indicators = indicators;
+  res.json(result);
+};
+
+
+exports.getIndicator = function(req, res){
+  console.log('API call: getIndicator');
+  var pid = req.params.pid;
+
+  var parameters = findIndicatorParametersById(pid);
+
+  res.json(parameters);
 };

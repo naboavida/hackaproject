@@ -135,3 +135,110 @@ a:visited{
     color: black;
 }
 
+
+
+
+
+.button a:hover{
+  /*background-color: #aeaeae;*/
+  border-top: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+}
+
+.button{
+  color: black;
+}
+a{
+  text-decoration: none;
+  color: black;
+}
+
+a:visited {text-decoration:none; color: black;}
+
+
+.widgetTitle{
+  margin-top: 10px;
+  font-size: 12pt;
+  margin-bottom:20px;
+}
+.line{
+    display: inline-block;
+}
+.line-item{
+    float: left;
+}
+.value{
+    font-size: 2em;
+    margin-bottom:15px;
+}
+.unit{
+    vertical-align: bottom;
+    margin-left:5px!important;
+    margin-right:5px!important;
+    font-size: 0.6em;
+}
+
+.smallButton{
+  font-size: 0.6em;
+  margin-left:5px!important;
+  margin-right:5px!important;
+  padding: 0;
+}
+
+.bottomRow{
+  /*margin: 0 auto;*/
+  /*margin-top: 5px;*/
+  /*width: 42px;*/
+  width: 52px;
+}
+
+
+/*
+style the bullet charts
+*/
+g text{
+  fill:#a4a4a4;
+}
+
+g .nv-tick text{
+  fill:#a4a4a4;
+}
+
+
+
+.project-item{
+  background-color:#333;
+}
+
+
+
+
+/* list for activities */
+
+.menuItem{
+  color:#a4a4a4;
+  /*height:500px;*/
+}
+.listItem{
+  background: #fff;
+  background: #ececec;
+  background-color: #444444;
+}
+
+.add-project{
+  border: 1px #333 dashed;
+  background-color:#231f20!important;
+}
+
+.projectTitle{
+  color:#eee;
+}
+
+.innerItem{
+  vertical-align: baseline;
+}
+
+.innerItem img{
+  /*border: 1px solid #fff; */
+  border-radius: 2px;
+}

@@ -68,6 +68,13 @@ body{
     line-height: 150%;
     border-radius: 8px;
 }
+
+.item-to-add{
+    background-color: transparent;
+    border: 1px #bbb dashed;
+}
+
+
 .itemOptions{
   /*display: none;*/
   visibility: hidden;
@@ -227,14 +234,14 @@ li{
   padding:5px;
   margin: 0 10px;
   height: 25px;
-  color: black;
+  color: #292E37;
 }
 a{
   text-decoration: none;
-  color: black;
+  color: #292E37;
 }
 
-a:visited {text-decoration:none; color: black;}
+a:visited {text-decoration:none; color: #292E37;}
 
 .widgetContent{
   /*margin-top: 25px;*/
@@ -294,7 +301,7 @@ a:visited {text-decoration:none; color: black;}
 
 
 #map {
-    height: 510px;
+    /*height: 510px;*/
     border-radius: 5px;
 }
 
@@ -328,17 +335,12 @@ g .nv-tick text{
 
 
 .project-item{
-  background-color:#333;
-}
-.add-project{
-  border: 1px #333 dashed;
-  background-color:#231f20!important;
+  background-color: white;
+  border: 1px #bbb solid;
 }
 
-.readWidget{
-  float:left;
-  margin:15px;
-}
+
+
 
 
 /* list for activities */
@@ -373,9 +375,8 @@ g .nv-tick text{
   /*border-width: 0 1px 1px 1px;
   border-style: solid;
   border-color: #b7b7b7 #aaaaaa #a0a0a0;*/
-  background: #fff;
-  background: #ececec;
-  background-color: #444444;
+  background-color: white;
+  border: 1px #bbb solid;
   /*background: -moz-linear-gradient(top, whitesmoke, #e3e3e3);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, whitesmoke), color-stop(100%, #e3e3e3));
   background: -webkit-linear-gradient(top, whitesmoke, #e3e3e3);
@@ -388,6 +389,9 @@ g .nv-tick text{
   border-radius:2px;
   text-align: left;
   margin-bottom: 25px;
+}
+.projectTitle{
+  
 }
 .listItemLarge{
   width: 400px;
@@ -403,6 +407,14 @@ g .nv-tick text{
   -moz-border-radius: 0 0 3px 3px;
   border-radius: 0 0 3px 3px;
 }*/
+
+
+.add-project{
+  background-color: #eee!important;
+  border: 1px #bbb dashed;
+}
+
+
 .innerItem{
   margin: 0 auto;
   padding: 0;
@@ -516,6 +528,7 @@ g .nv-tick text{
 .breadcrumb li:last-child a {
   background: transparent !important;
   /*color: black;*/
+  color:#292E37;
   pointer-events: none;
   cursor: default;
 }

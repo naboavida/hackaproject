@@ -8,7 +8,7 @@ div
 		li
 			a(href='') Dashboard
 	div
-		h5(style='text-align:center;') Dashboard {{project}}
+		h5(style='text-align:center;') Dashboard {{project.location}}
 	div.mainDiv
 		div.leftDiv
 			div.leftDivContent
@@ -17,12 +17,12 @@ div
 						img.thumbnail(src='pics/saotome.jpg')
 					div.rightInfoDiv
 						div
-							h2(style='margin-left:25px;') São Tomé
+							h2(style='margin-left:25px;') {{project.title}}
 						div
 							div.leftBarDiv
-								h4 124.455 inhabitants
+								h4 {{project.location}}
 							div.rightBarDiv
-								h4 100 km2
+								h4 {{project.area}} km2
 				div#map(ng-controller="DemoController")
 					leaflet(center="madeira",width="450",height="400",markers="markers")
 					//- leaflet(center="madeira",width="500",height="400",markers="markers",event-broadcast="events")

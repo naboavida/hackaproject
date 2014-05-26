@@ -521,3 +521,9 @@ g .nv-tick text{
 }
 .breadcrumb li a:hover { background: hsla(0,0%,25%,1); }
 .breadcrumb li a:hover:after { border-left-color: hsla(0,0%,25%,1) !important; }
+
+
+
+.display-none{
+  display:none;
+}

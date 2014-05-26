@@ -77,7 +77,7 @@ exports.deletePost = function (req, res) {
 // DATA
 
 
-var projects = [{id:0, title:'Madeira', area:'123'},{id:1, title:'Texas', area:'321'}];
+var projects = [{"id":0, "title":'Water Quality in São Tomé', "location": "São Tomé", "area":'123'},{"id":1, "title":'Oilfields for Big Oil Company', "location":"Texas, USA", "area":'321'}];
 
 var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "alarm":'yes', "coord":[{"x":32.666667, "y": -16.85}]}, {"iid":2, "title":"Location", "value":"Monte", "unit":'', "alarm":'no', "coord":[{"x":32.666667, "y": -16.95}]}] }, {"id":1, "indicators":[{"iid":1, "title":"Budget", "value":4, "unit":"Eur", "alarm":'no'}] }];
 
@@ -109,15 +109,16 @@ function findMaxProjectId() {
 }
 
 
-function findTitleById(pid) {
-  var result = 'NOT FOUND';
+function findProjectById(pid) {
+  var result = {};
+  result.title = 'NOT FOUND';
   // console.log(projects);
   projects.forEach(function(project){
     if(project.hasOwnProperty('id') ){
       // console.log(project.id + " " + pid);
       // console.log(project.id == pid);
       if(project.id == pid){
-        result = project.title;
+        result = project;
       }
     }
   });
@@ -340,14 +341,14 @@ exports.addProject = function(req, res){
 exports.getDashboard = function(req, res){
   console.log('API call: getDashboard');
   var pid = req.params.pid;
-  var title = findTitleById(pid);
+  var project = findProjectById(pid);
   // console.log('title is: '+title);
 
   var indicators = findDashboardIndicatorsById(pid);
   // console.log(indicators);
 
   var result = {};
-  result.title = title;
+  result.project = project;
   result.indicators = indicators;
   res.json(result);
 };

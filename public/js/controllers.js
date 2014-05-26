@@ -130,7 +130,7 @@ function DashboardCtrl($scope, $http, $routeParams){
     success(function(data, status) {
       // console.log("yeah read!");
       // console.log(data);
-      $scope.project = data.title;
+      $scope.project = data.project;
       $scope.indicators = data.indicators;
       // console.log($scope.indicators);
     }).
@@ -325,6 +325,9 @@ function CalendarCtrl($scope, $http, $routeParams){
   $scope.pid = $routeParams.pid;
 
   $scope.nextActivity = {};
+
+  $scope.addForm = 'display-none';
+  $scope.viewForm = 'display-none';
   
 
   $http.get('/api/activities/'+$scope.pid).
@@ -399,6 +402,9 @@ function CalendarCtrl($scope, $http, $routeParams){
   };
   
   $scope.alertDayClick = function(date, allDay, jsEvent, view){
+    $scope.addForm = '';
+    $scope.viewForm = 'display-none';
+
     $scope.calEventsExt.events = [];
     if (allDay) {
         console.log('Clicked on the entire day: ' + date);
@@ -416,6 +422,8 @@ function CalendarCtrl($scope, $http, $routeParams){
   $scope.toAdd = {};
 
   $scope.addActivity = function(){
+    $scope.addForm = 'display-none';
+    $scope.viewForm = 'display-none';
     $scope.calEventsExt.events = [];
     // $scope.events.push(toAdd);
     // falta adicionar à API
@@ -433,6 +441,18 @@ function CalendarCtrl($scope, $http, $routeParams){
       });
   }
 
+  $scope.alertEventClick = function( eventCell, jsEvent, view ) {
+    console.log('alertEventClick');
+    $scope.addForm = 'display-none';
+    $scope.viewForm = '';
+
+    $scope.toAdd.title = eventCell.title;
+    $scope.toAdd.start = eventCell.start;
+    $scope.toAdd.location = eventCell.location;
+    $scope.toAdd.responsible = eventCell.responsible;
+    $scope.calEventsExt.events = [];
+  };
+
 
   $scope.activityToAdd = '';
 
@@ -448,7 +468,8 @@ function CalendarCtrl($scope, $http, $routeParams){
       },
       dayClick: $scope.alertDayClick,
       eventDrop: $scope.alertOnDrop,
-      eventResize: $scope.alertOnResize
+      eventResize: $scope.alertOnResize,
+      eventClick: $scope.alertEventClick
     }
   };
 

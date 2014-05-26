@@ -12,6 +12,17 @@ div
 	div.mainDiv
 		div.leftDiv
 			div.leftDivContent
+				div.areaInfo
+					div.leftInfoDiv
+						img.thumbnail(src='pics/saotome.jpg')
+					div.rightInfoDiv
+						div
+							h2(style='margin-left:25px;') São Tomé
+						div
+							div.leftBarDiv
+								h4 124.455 inhabitants
+							div.rightBarDiv
+								h4 100 km2
 				div#map(ng-controller="DemoController")
 					leaflet(center="madeira",width="450",height="400",markers="markers")
 		div.rightDiv

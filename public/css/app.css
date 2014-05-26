@@ -466,7 +466,7 @@ g .nv-tick text{
 .breadcrumb li a {
   color: white;
   text-decoration: none; 
-  padding: 10px 0 10px 65px;
+  padding: 5px 0 5px 55px;
   background: grey;                   /* fallback color */
   background: hsla(0,0%,35%,1); 
   position: relative; 
@@ -503,7 +503,7 @@ g .nv-tick text{
   z-index: 1; 
 }
 .breadcrumb li:first-child a {
-  padding-left: 10px;
+  padding-left: 20px;
 }
 .breadcrumb li:nth-child(2) a       { background:        hsla(0,0%,45%,1); }
 .breadcrumb li:nth-child(2) a:after { border-left-color: hsla(0,0%,45%,1); }

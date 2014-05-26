@@ -11,15 +11,32 @@ div
 			a(href='') Calendar
 div.mainDiv
 	div.leftDiv
-			div.leftDivContent
-				div#map(ng-controller="DemoController")
-					leaflet(center="madeira",width="450",height="400",markers="markers")
+		div.leftDivContent
+			div.areaInfo
+				div.leftInfoDiv
+					img.thumbnail(src='pics/saotome.jpg')
+				div.rightInfoDiv
+					div
+						h2(style='margin-left:25px;') São Tomé
+					div
+						div.leftBarDiv
+							h4 124.455 inhabitants
+						div.rightBarDiv
+							h4 100 km2
+			div#map(ng-controller="DemoController")
+				leaflet(center="madeira",width="450",height="400",markers="markers")
 	div.rightDiv
 		div(ng-controller="CalendarCtrl", style='width:70%;margin-left:auto;margin-right:auto;')
-			div(style='margin-top:105px;')
+			div(style='margin-top:25px;')
 				div(ui-calendar="uiConfig.calendar", ng-model='eventSources',calendar='myCalendar1')
-			//- div
-			//- 	form
-			//- 		p activityToAdd: {{activityToAdd}}
-			//- 		input(name='activityName', ng-model='activityToAdd')
-			//- 		input(type='submit') Add Activity
+			div
+				form
+					p toAddTitle: {{toAdd.title}}
+					p toAddStart: {{toAdd.start}}
+					p toAddLocation: {{toAdd.location}}
+					p toAddResponsible: {{toAdd.responsible}}
+					p: input(placeholder='Title', name='title', ng-model='toAdd.title')
+					p: input(placeholder='Start date', name='start', ng-model='toAdd.start')
+					p: input(placeholder='Location', name='start', ng-model='toAdd.location')
+					p: input(placeholder='Responsible', name='start', ng-model='toAdd.responsible')
+					p: button(ng-click='addActivity()') Add

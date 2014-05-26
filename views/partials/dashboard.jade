@@ -12,6 +12,17 @@ div
 	div.mainDiv
 		div.leftDiv
 			div.leftDivContent
+				div.areaInfo
+					div.leftInfoDiv
+						img.thumbnail(src='pics/saotome.jpg')
+					div.rightInfoDiv
+						div
+							h2(style='margin-left:25px;') São Tomé
+						div
+							div.leftBarDiv
+								h4 124.455 inhabitants
+							div.rightBarDiv
+								h4 100 km2
 				div#map(ng-controller="DemoController")
 					leaflet(center="madeira",width="450",height="400",markers="markers")
 					//- leaflet(center="madeira",width="500",height="400",markers="markers",event-broadcast="events")
@@ -32,15 +43,16 @@ div
 							div(class='{{indicator.alarm}}')
 								a.smallButton(href='project/readPost/{{post.id}}')
 									img(src='img/alarm.png')
-				li.item
+				li.item(ng-controller="CalendarCtrl")
 					div.widgetContent
 						h3.widgetTitle Next Activity
 						div.line
-							div.line-item.value 27th
-							div.line-item.unit May 2014
-						div.line
+							div.line-item.value {{nextActivity.day}}
+							div.line-item.unit {{nextActivity.month}} {{nextActivity.year}}
+						div.bottomRow(style='width:100%;')
+							div.line-item.unit {{nextActivity.title}}
 							img.line-item(src='pics/cal.png',style='width:50px;height:50px;')
-						div.line
+						div.line.bottomRow(style='width:100%;')
 							a(href='/calendar/{{pid}}') Open
 				li.item.item-to-add
 					a(href='/addWidget/{{pid}}')

@@ -316,10 +316,53 @@ function DemoController($scope, $http, $routeParams){
 }
 
 
+var monthNames = [ "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December" ];
+
 
 function CalendarCtrl($scope, $http, $routeParams){
   console.log("CalendarCtrl!!!");
   $scope.pid = $routeParams.pid;
+
+  $scope.nextActivity = {};
+  
+
+  $http.get('/api/activities/'+$scope.pid).
+    success(function(data) {
+      // console.log("data is ");
+      // console.log(data);
+      
+      for(var i = 0; i < data.length; i++){
+        var aux_obj = {};
+        aux_obj.title = data[i].title;
+        aux_obj.start = data[i].start;
+        aux_obj.aid = data[i].aid;
+
+        console.log(aux_obj);
+        $scope.events.push(aux_obj);
+
+        var date_next = new Date($scope.nextActivity.start);
+        var date_aux = new Date(aux_obj.start);
+        var today = new Date();
+        // today.setHours(myDate.getDate()-1);
+
+        if($scope.nextActivity.start == undefined || $scope.nextActivity.start == null || ( date_aux < date_next) ){
+          if(date_aux >= today)
+            $scope.nextActivity = aux_obj;
+        }
+
+        
+      }
+
+      $scope.nextActivity.day = new Date($scope.nextActivity.start).getDate();
+      $scope.nextActivity.month = monthNames[new Date($scope.nextActivity.start).getMonth()];
+      $scope.nextActivity.year = new Date($scope.nextActivity.start).getFullYear();
+
+      // $scope.events[0].title = data[0].title;
+      // $scope.nextActivity = data.nextActivity;
+      // $scope.nextStart = data.nextStart;
+      // $scope.events[0].start = $scope.nextStart;
+    });
 
 
     $scope.nextActivity = {
@@ -343,14 +386,59 @@ function CalendarCtrl($scope, $http, $routeParams){
     //   });
   
 
+  $scope.alertOnDrop = function(elem){
+    var dateDropped = new Date(elem.start);
+    console.log(dateDropped);
+    // console.log(dateDropped.getDate());
+    var togo = {'aid':elem.aid, 'title':elem.title, 'start':elem.start};
+    $http.post('/api/activities/'+$scope.pid, togo).
+      success(function(data) {
+        // console.log("yeah postNextActivity!");
+        // $location.path('/projects');
+      });
+  };
   
+  $scope.alertDayClick = function(date, allDay, jsEvent, view){
+    $scope.calEventsExt.events = [];
+    if (allDay) {
+        console.log('Clicked on the entire day: ' + date);
+    }else{
+        // console.log('Clicked on the slot: ' + date);
+    }
+    $scope.toAdd.title = '<empty name>';
+    $scope.toAdd.start = date;
+    console.log("to add start "+$scope.toAdd.start);
+    // $scope.eventsToAdd.push({title:$scope.toAdd.title, start:$scope.toAdd.start});
+    $scope.calEventsExt.events.push({title:$scope.toAdd.title, start:$scope.toAdd.start});
+    // console.log($scope.events);
+  };
+
+  $scope.toAdd = {};
+
+  $scope.addActivity = function(){
+    $scope.calEventsExt.events = [];
+    // $scope.events.push(toAdd);
+    // falta adicionar à API
+    console.log("to add start2 "+$scope.toAdd.start);
+
+    $http.post('/api/activities/'+$scope.pid, $scope.toAdd).
+      success(function(data) {
+        // console.log("yeah postNextActivity!");
+        // $location.path('/projects');
+
+        $scope.events.push(data);
+        console.log("received start date "+data.start);
+        console.log("translated date "+ (new Date(data.start)) );
+        $scope.toAdd = {};
+      });
+  }
 
 
   $scope.activityToAdd = '';
 
   $scope.uiConfig = {
     calendar: {
-      height: 450,
+      height: 400,
       editable: true,
       header: {
         // left: 'month basicWeek basicDay agendaWeek agendaDay',
@@ -372,8 +460,19 @@ function CalendarCtrl($scope, $http, $routeParams){
   var y = date.getFullYear();
 
   
-  $scope.events = [
-    { title: 'Water Sampling', start: new Date(y, m, 25) }
-  ];
-  $scope.eventSources = [$scope.events];
+  // $scope.events = [
+  //   { title: 'Water Sampling', start: new Date(y, m, 28) }, { title: 'Water 2', start: new Date(y, m, 29) }
+  // ];
+  $scope.events = [];
+  $scope.eventsToAdd = [];
+  console.log("1 events:");
+  console.log($scope.events);
+
+  $scope.calEventsExt = {
+       color: '#aa0',
+       // textColor: 'yellow',
+       events: []
+    };
+
+  $scope.eventSources = [$scope.events, $scope.calEventsExt];
 }

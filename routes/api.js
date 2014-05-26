@@ -76,6 +76,7 @@ exports.deletePost = function (req, res) {
 
 // DATA
 
+
 var projects = [{id:0, title:'Madeira', area:'123'},{id:1, title:'Texas', area:'321'}];
 
 var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "alarm":'yes', "coord":[{"x":32.666667, "y": -16.85}]}, {"iid":2, "title":"Location", "value":"Monte", "unit":'', "alarm":'no', "coord":[{"x":32.666667, "y": -16.95}]}] }, {"id":1, "indicators":[{"iid":1, "title":"Budget", "value":4, "unit":"Eur", "alarm":'no'}] }];
@@ -84,9 +85,15 @@ var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4,
                   {"iid":1, "parameters":[{"parmid":0, "title":"Ferro", "value":123, "unit":"mg/l"}] },
                   {"iid":2, "parameters":[] }  ];
 
+var def_date = new Date("June 1, 2014 11:13:00");
+
+var activities = [ {"id":0, "activitiesList":[{"aid":0, "title":"Woo Sampling", "start":'2014-05-29T22:00:00.000Z', "end":""}, {"aid":1, "title":"pH Sampling", "start":'2014-05-30T22:00:00.000Z', "end":""}] }, 
+                  {"id":1, "activitiesList":[] },
+                  {"id":2, "activitiesList":[] }  ];
 
 var nextIID = 3;
 var nextParmId = 2;
+var nextAID = 2;
 
 
 // UTILS
@@ -133,6 +140,97 @@ function findDashboardIndicatorsById(pid) {
   return result;
 }
 
+function findDashboardIndicatorsIIDById(pid) {
+  var result = [];
+  // console.log(projects);
+  dashboards.forEach(function(dashboard){
+    if(dashboard.hasOwnProperty('id') ){
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
+      if(dashboard.id == pid){
+        for(var ind in dashboard.indicators)
+          result.push(ind);
+          // console.log(dashboard.indicators[ind]);
+        // result.push(dashboard.indicators.iid);
+        // console.log("pushing:");
+        // console.log(dashboard.indicators);
+      }
+    }
+  });
+  return result;
+}
+
+
+function findProjectActivitiesById(pid){
+  var result = [];
+  activities.forEach(function(entry){
+    if(entry.hasOwnProperty('id') ){
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
+      if(entry.id == pid){
+          result = entry.activitiesList;
+          // console.log(dashboard.indicators[ind]);
+        // result.push(dashboard.indicators.iid);
+        // console.log("pushing:");
+        // console.log(dashboard.indicators);
+      }
+    }
+  });
+  return result;
+}
+
+
+function setActivityByPid(pid, obj){
+  var result = [];
+  console.log('setActivityByPid');
+  activities.forEach(function(entry){
+    if(entry.hasOwnProperty('id') ){
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
+      if(entry.id == pid){
+          entry.activitiesList.forEach(function(activity){
+            if(activity.aid == obj.aid){
+              console.log(obj.start);
+              activity.start = obj.start;
+              // falta actualizar o end e o title
+              console.log(entry.activitiesList);
+            }
+
+          });
+          // console.log(dashboard.indicators[ind]);
+        // result.push(dashboard.indicators.iid);
+        // console.log("pushing:");
+        // console.log(dashboard.indicators);
+      }
+    }
+  });
+  return result;
+}
+
+
+
+function addActivityByPid(pid, obj){
+  var result = [];
+  console.log('setActivityByPid');
+  activities.forEach(function(entry){
+    if(entry.hasOwnProperty('id') ){
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
+      if(entry.id == pid){
+          obj.aid = nextAID;
+          entry.activitiesList.push(obj);
+          nextAID++;
+          // console.log(dashboard.indicators[ind]);
+        // result.push(dashboard.indicators.iid);
+        // console.log("pushing:");
+        // console.log(dashboard.indicators);
+      }
+    }
+  });
+  return result;
+}
+
+
 
 
 function findIndicatorById(iid){
@@ -158,7 +256,7 @@ function findIndicatorParametersByIId(iid) {
     if(indicator.hasOwnProperty('iid') ){
       // console.log(indicator.id + " " + iid);
       // console.log(indicator.id == iid);
-      console.log(indicator);
+      // console.log(indicator);
       if(indicator.iid == iid){
         result = indicator.parameters;
       }
@@ -191,7 +289,7 @@ function getLocationsByPId(pid){
       if(indicator.id == pid){
         // console.log(indicator.indicators);
         indicator.indicators.forEach(function(ind){
-          console.log(ind.coord);
+          // console.log(ind.coord);
           if(ind.coord != undefined)
             result.push( {"x": ind.coord[0].x, "y": ind.coord[0].y } );
         });
@@ -202,7 +300,19 @@ function getLocationsByPId(pid){
 }
 
 
+
+
+
+
+
+
+
+// ************************************************************************************************************************************
 // METHODS:
+// METHODS:
+// METHODS:
+// METHODS:
+// ************************************************************************************************************************************
 
 
 
@@ -315,16 +425,16 @@ exports.addParameter = function(req, res){
   var parameters = findIndicatorParametersByIId(iid);
   
   console.log("Pushing parm into parms");
-  console.log(parameters);
+  // console.log(parameters);
   parameters.push(req.body);
 
-  console.log(parameters);
+  // console.log(parameters);
 
 
   console.log("Dashboards");
-  console.log(dashboards);
+  // console.log(dashboards);
   console.log("Indicators");
-  console.log(indicators);
+  // console.log(indicators);
 
   res.json(parameters);
 };
@@ -333,8 +443,54 @@ exports.addParameter = function(req, res){
 exports.geoapi = function(req, res){
   console.log('API call: geoapi');
   var pid = req.params.pid;
-  console.log(pid);
+  // console.log(pid);
   var loc = getLocationsByPId(pid);
-  console.log(loc);
+  // console.log(loc);
   res.json(loc);
 };
+
+
+
+// obter todas as activities de um determinado projecto.
+exports.getActivities = function(req, res){
+  console.log('API call: getActivities');
+  var pid = req.params.pid;
+
+  // obter todos os indicadores de um projecto
+  var activities_arr = findProjectActivitiesById(pid);
+  console.log(activities_arr);
+  // para cada indicador, obter as tarefas
+
+  
+  // var activitiesList
+  // for(var activitiesList in activities){
+  //   console.log(activitiesList);
+  // }
+  
+  // incluir as tarefas na variavel de resultado
+  res.json(activities_arr);
+}
+
+
+exports.setActivities = function(req, res){
+  console.log('API call: setActivities');
+  var today = new Date();
+  console.log(req.body.start);
+  var pid = req.params.pid;
+
+  if(req.body.aid != undefined && req.body.aid != null){
+    if( typeof(req.body) == 'object' ){
+      var aid = req.body.aid;
+      console.log(req.body);
+
+      setActivityByPid(pid, req.body);
+      // see if we have the aid on activities    
+      //else add the req.body to the pid on activities
+    }
+  } else {
+    // were adding a new one because it has no aid (activity id)
+    addActivityByPid(pid, req.body);
+  }
+
+  res.json(req.body);
+}

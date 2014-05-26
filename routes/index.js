@@ -21,9 +21,9 @@ exports.project = function (req, res) {
 // 	res.render('dashboard');
 // };
 
-exports.projects = function (req, res) {
-	res.render('projects');
-};
+// exports.projects = function (req, res) {
+// 	res.render('projects');
+// };
 
 exports.addProject = function (req, res) {
 	res.render('addProject');

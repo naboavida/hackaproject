@@ -15,9 +15,9 @@ div
 		div.leftDiv
 			div.leftDivContent
 				div#map(ng-controller="DemoController")
-					leaflet(center="madeira",width="500",height="400",markers="markers")
+					leaflet(center="madeira",width="450",height="400",markers="markers")
 		div.rightDiv
-			div
+			div(style='right:0;float:right;')
 				p: a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Goals
 				p History
 			div

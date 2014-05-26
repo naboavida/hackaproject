@@ -45,7 +45,7 @@ if (app.get('env') === 'production') {
 // serve index and view partials
 app.get('/', routes.index);
 // app.get('/dashboard', routes.dashboard);
-app.get('/projects', routes.projects);
+// app.get('/projects', routes.projects);
 app.get('/addProject', routes.addProject);
 // app.get('/addWidget/:pid', routes.addWidget);
 // app.get('/dashboard/:pid', routes.dashboard);

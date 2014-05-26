@@ -8,8 +8,8 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         templateUrl: 'partials/index',
         controller: IndexCtrl
       }).
-      when('/projects/', {
-        templateUrl: 'projects',
+      when('/projects', {
+        templateUrl: 'partials/projects',
         controller: ProjectsCtrl
       }).
       when('/addProject', {

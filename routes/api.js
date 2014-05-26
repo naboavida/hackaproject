@@ -78,7 +78,7 @@ exports.deletePost = function (req, res) {
 
 var projects = [{id:0, title:'Madeira', area:'123'},{id:1, title:'Texas', area:'321'}];
 
-var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "coord":[{"x":32.666667, "y": -16.85}]}, {"iid":2, "title":"Localização", "value":"Monte", "unit":'', "coord":[{"x":32.666667, "y": -16.95}]}] }, {"id":1, "indicators":[{"iid":1, "title":"Budget", "value":4, "unit":"Eur"}] }];
+var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "alarm":'yes', "coord":[{"x":32.666667, "y": -16.85}]}, {"iid":2, "title":"Location", "value":"Monte", "unit":'', "alarm":'no', "coord":[{"x":32.666667, "y": -16.95}]}] }, {"id":1, "indicators":[{"iid":1, "title":"Budget", "value":4, "unit":"Eur", "alarm":'no'}] }];
 
 var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4, "unit":""}] }, 
                   {"iid":1, "parameters":[{"parmid":0, "title":"Ferro", "value":123, "unit":"mg/l"}] },

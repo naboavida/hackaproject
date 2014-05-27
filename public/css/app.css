@@ -429,8 +429,8 @@ g .nv-tick text{
   /*text-align: center;*/
 }
 .innerItemBigParagraph{
-  margin-top: 25px;
-  margin-bottom: 25px;
+  padding-top: 25px;
+  padding-bottom: 25px;
   text-align: center;
 }
 .innerItem img{

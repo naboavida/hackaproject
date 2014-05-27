@@ -65,6 +65,7 @@ app.post('/api/indicator/:pid', api.addIndicator);
 
 app.get('/api/parameter/:iid/:parmid', api.getParameter);
 app.post('/api/parameter/:pid/:iid', api.addParameter);
+app.get('/api/parameterReadings/:iid/:parmid', api.getParameterReadings);
 
 app.get('/api/posts', api.posts);
 
@@ -77,6 +78,8 @@ app.get('/geoapi/:pid', api.geoapi);
 
 app.get('/api/activities/:pid', api.getActivities);
 app.post('/api/activities/:pid', api.setActivities);
+
+
 
 // redirect all others to the index (HTML5 history)
 app.get('*', routes.index);

@@ -77,12 +77,18 @@ exports.deletePost = function (req, res) {
 // DATA
 
 
-var projects = [{"id":0, "title":'Water Quality in São Tomé', "location": "São Tomé", "area":'123'},{"id":1, "title":'Oilfields for Big Oil Company', "location":"Texas, USA", "area":'321'}];
+var projects = [{"id":0, "title":'Water Quality in São Tomé', "location": "São Tomé", "area":'123'},
+                {"id":1, "title":'Oilfields for Big Oil Company', "location":"Texas, USA", "area":'321'}];
 
-var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "alarm":'yes', "coord":[{"x":32.666667, "y": -16.85}]}, {"iid":2, "title":"Location", "value":"Monte", "unit":'', "alarm":'no', "coord":[{"x":32.666667, "y": -16.95}]}] }, {"id":1, "indicators":[{"iid":1, "title":"Budget", "value":4, "unit":"Eur", "alarm":'no'}] }];
+var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "alarm":'yes', "coord":[{"x":32.666667, "y": -16.85}], 
+                                                    "readings":[]},
+                                        {"iid":2, "title":"Location", "value":"Monte", "unit":'', "alarm":'no', "coord":[{"x":32.666667, "y": -16.95}]}] }, 
+                  {"id":1, "indicators":[{"iid":1, "title":"Budget", "value":4, "unit":"Eur", "alarm":'no'}] }];
 
-var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":4, "unit":""}] }, 
-                  {"iid":1, "parameters":[{"parmid":0, "title":"Ferro", "value":123, "unit":"mg/l"}] },
+var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":7.3, "unit":"", 
+                                                    "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3] ]  }] }, 
+                  {"iid":1, "parameters":[{"parmid":1, "title":"Ferro", "value":123, "unit":"mg/l", 
+                                                    "readings":[[0, 123] ]  }] },
                   {"iid":2, "parameters":[] }  ];
 
 var def_date = new Date("June 1, 2014 11:13:00");
@@ -90,6 +96,7 @@ var def_date = new Date("June 1, 2014 11:13:00");
 var activities = [ {"id":0, "activitiesList":[{"aid":0, "title":"Woo Sampling", "start":'2014-05-29T22:00:00.000Z', "end":""}, {"aid":1, "title":"pH Sampling", "start":'2014-05-30T22:00:00.000Z', "end":""}] }, 
                   {"id":1, "activitiesList":[] },
                   {"id":2, "activitiesList":[] }  ];
+
 
 var nextIID = 3;
 var nextParmId = 2;
@@ -494,4 +501,15 @@ exports.setActivities = function(req, res){
   }
 
   res.json(req.body);
+}
+
+exports.getParameterReadings = function(req, res){
+  console.log('API call: getParameterReadings');
+  var pid = req.params.pid;
+  var iid = req.params.iid;
+  var parmid = req.params.parmid;
+
+  var parameter = findParameterByParmId(iid, parmid);
+  console.log(parameter.readings);
+  res.json(parameter.readings);
 }

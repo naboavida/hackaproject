@@ -102,7 +102,8 @@ var pointDashboards = [ {"id": 0, "pointIndicators": [ {"pointid": 0, "coord":[{
                                                                 "indicators":[{"pointiid":0, "title":"Water Ruality", "value":4, "unit":"mg", "alarm":"yes" }] }, 
                                                        {"pointid": 1, "coord":[{"x":32.666667, "y": -16.95}],
                                                                 "indicators":[] }
-                                                         ] } ];
+                                                         ] },
+                        {"id": 1, "pointIndicators":[] } ];
 
 
 var nextIID = 3;
@@ -405,6 +406,9 @@ exports.addProject = function(req, res){
   dashboards.push({"id":req.body.id, "indicators":[] });
   // console.log(dashboards);
 
+  pointDashboards.push({"id": req.body.id, "pointIndicators":[] });
+  
+
   // res.json(req.body);
   res.json(projects);
 };
@@ -585,6 +589,9 @@ exports.geoapiAddPoint = function(req, res){
   // adicionar ao pointToAdd bem como os restantes x, y
   // adicionar o pointToAdd ao pointIndicator
   console.log(pointIndicator);
+
+  console.log("add geo point");
+  console.log(pointDashboards);
 
   res.json(pointToAdd);
 };

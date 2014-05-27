@@ -88,12 +88,12 @@ var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "val
 var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":7.3, "unit":"", 
                                                     "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3] ]  }] }, 
                   {"iid":1, "parameters":[{"parmid":1, "title":"Ferro", "value":123, "unit":"mg/l", 
-                                                    "readings":[[0, 123] ]  }] },
+                                                    "readings":[[0, 123], [1,113.5], [2,123.5], [3,133.5], [4,153.5] ]  }] },
                   {"iid":2, "parameters":[] }  ];
 
 var def_date = new Date("June 1, 2014 11:13:00");
 
-var activities = [ {"id":0, "activitiesList":[{"aid":0, "title":"Woo Sampling", "start":'2014-05-29T22:00:00.000Z', "end":""}, {"aid":1, "title":"pH Sampling", "start":'2014-05-30T22:00:00.000Z', "end":""}] }, 
+var activities = [ {"id":0, "activitiesList":[{"aid":0, "title":"Woo Sampling", "start":'2014-05-29T22:00:00.000Z', "end":"", "allDay":true}, {"aid":1, "title":"pH Sampling", "start":'2014-05-30T22:00:00.000Z', "end":"", "allDay":true}] }, 
                   {"id":1, "activitiesList":[] },
                   {"id":2, "activitiesList":[] }  ];
 
@@ -200,6 +200,8 @@ function setActivityByPid(pid, obj){
             if(activity.aid == obj.aid){
               console.log(obj.start);
               activity.start = obj.start;
+              activity.end = obj.end;
+              activity.allDay = obj.allDay;
               // falta actualizar o end e o title
               console.log(entry.activitiesList);
             }
@@ -219,7 +221,8 @@ function setActivityByPid(pid, obj){
 
 function addActivityByPid(pid, obj){
   var result = [];
-  console.log('setActivityByPid');
+  console.log('addActivityByPid');
+  console.log(obj);
   activities.forEach(function(entry){
     if(entry.hasOwnProperty('id') ){
       // console.log(project.id + " " + pid);
@@ -483,13 +486,14 @@ exports.getActivities = function(req, res){
 exports.setActivities = function(req, res){
   console.log('API call: setActivities');
   var today = new Date();
-  console.log(req.body.start);
+  console.log(req.body);
   var pid = req.params.pid;
 
+  console.log(req.body.aid != null);
   if(req.body.aid != undefined && req.body.aid != null){
     if( typeof(req.body) == 'object' ){
       var aid = req.body.aid;
-      console.log(req.body);
+      console.log("setActivityByPid");
 
       setActivityByPid(pid, req.body);
       // see if we have the aid on activities    

@@ -358,8 +358,10 @@ function CalendarCtrl($scope, $http, $routeParams){
       for(var i = 0; i < data.length; i++){
         var aux_obj = {};
         aux_obj.title = data[i].title;
-        aux_obj.start = data[i].start;
+        aux_obj.start = new Date(data[i].start);
         aux_obj.aid = data[i].aid;
+        aux_obj.allDay = data[i].allDay;
+        aux_obj.responsible = data[i].responsible;
 
         // console.log(aux_obj);
         $scope.events.push(aux_obj);
@@ -369,9 +371,18 @@ function CalendarCtrl($scope, $http, $routeParams){
         var today = new Date();
         // today.setHours(myDate.getDate()-1);
 
+        console.log("Comparing aux < next "+ (date_aux < date_next) );
         if($scope.nextActivity.start == undefined || $scope.nextActivity.start == null || ( date_aux < date_next) ){
+          // end a null, compara só o dia inclusive
+          //else
+          console.log("Comparing today!");
+          // console.log("today: " + today + " -- aux_date "+date_aux);
+          if(aux_obj.allDay)
+            today.setHours(0,0,0,0);
+          console.log("today: " + today + " -- aux_date "+date_aux);
           if(date_aux >= today)
             $scope.nextActivity = aux_obj;
+
         }
 
         
@@ -411,9 +422,9 @@ function CalendarCtrl($scope, $http, $routeParams){
 
   $scope.alertOnDrop = function(elem){
     var dateDropped = new Date(elem.start);
-    // console.log(dateDropped);
+    console.log(elem);
     // console.log(dateDropped.getDate());
-    var togo = {'aid':elem.aid, 'title':elem.title, 'start':elem.start};
+    var togo = {'aid':elem.aid, 'title':elem.title, 'start':elem.start, 'end':elem.end, 'allDay':elem.allDay};
     $http.post('/api/activities/'+$scope.pid, togo).
       success(function(data) {
         // console.log("yeah postNextActivity!");
@@ -433,9 +444,12 @@ function CalendarCtrl($scope, $http, $routeParams){
     }
     $scope.toAdd.title = '<empty name>';
     $scope.toAdd.start = date;
+    if(allDay)
+      $scope.toAdd.end = null;
+    $scope.toAdd.allDay = allDay;
     // console.log("to add start "+$scope.toAdd.start);
     // $scope.eventsToAdd.push({title:$scope.toAdd.title, start:$scope.toAdd.start});
-    $scope.calEventsExt.events.push({title:$scope.toAdd.title, start:$scope.toAdd.start});
+    $scope.calEventsExt.events.push({title:$scope.toAdd.title, start:$scope.toAdd.start, "allDay":allDay});
     // console.log($scope.events);
   };
 
@@ -447,16 +461,19 @@ function CalendarCtrl($scope, $http, $routeParams){
     $scope.calEventsExt.events = [];
     // $scope.events.push(toAdd);
     // falta adicionar à API
-    console.log("to add start2 "+$scope.toAdd.start);
-
+    console.log("sneding scope toadd");
+    console.log($scope.toAdd);
     $http.post('/api/activities/'+$scope.pid, $scope.toAdd).
       success(function(data) {
         // console.log("yeah postNextActivity!");
         // $location.path('/projects');
+        // $.each(function(data, i) {
+          data.start = new Date(data.start);
+        // });
 
         $scope.events.push(data);
-        console.log("received start date "+data.start);
-        console.log("translated date "+ (new Date(data.start)) );
+        // console.log("received start date "+data.start);
+        // console.log("translated date "+ (new Date(data.start)) );
         $scope.toAdd = {};
       });
   }
@@ -466,10 +483,15 @@ function CalendarCtrl($scope, $http, $routeParams){
     $scope.addForm = 'display-none';
     $scope.viewForm = '';
 
+    // console.log("eventCell");
+    // console.log(eventCell);
+
     $scope.toAdd.title = eventCell.title;
     $scope.toAdd.start = eventCell.start;
+    $scope.toAdd.end = eventCell.end;
+    $scope.toAdd.allDay = eventCell.allDay;
     $scope.toAdd.location = eventCell.location;
-    $scope.toAdd.responsible = eventCell.responsible;
+    $scope.toAdd.responsible = eventCell.responsible; // isto tem de vir do events, que veio da BD
     $scope.calEventsExt.events = [];
   };
 

@@ -31,9 +31,10 @@ div.mainDiv
 			div(class='{{viewForm}}')
 				p toAddTitle: {{toAdd.title}}
 				p toAddStart: {{toAdd.start}}
+				p toAddEnd: {{toAdd.end}}
+				p allDay: {{toAdd.allDay}}
 				p toAddLocation: {{toAdd.location}}
 				p toAddResponsible: {{toAdd.responsible}}
-				p class: {{inputForm}}
 			div(class='{{addForm}}')
 				p: input(placeholder='Title', name='title', ng-model='toAdd.title')
 				p: input(placeholder='Start date', name='start', ng-model='toAdd.start')

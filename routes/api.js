@@ -359,6 +359,23 @@ function getLocationsByPId(pid){
   return result;
 }
 
+function getLocationsByPIdPointid(pid, pointid){
+  var result = [];
+  // console.log(projects);
+
+  pointDashboards.forEach(function(indicator){
+    if(indicator.hasOwnProperty('id') ){
+      if(indicator.id == pid){
+        indicator.pointIndicators.forEach(function(ind){
+          if(ind.pointid == pointid)
+            result.push( {"pointid":ind.pointid , "x": ind.coord[0].x, "y": ind.coord[0].y } );
+        });
+      }
+    }
+  });
+  return result;
+}
+
 
 function getPointIndicatorById(pid){
   var result = [];
@@ -565,6 +582,17 @@ exports.geoapi = function(req, res){
   var pid = req.params.pid;
   // console.log(pid);
   var loc = getLocationsByPId(pid);
+  // console.log(loc);
+  res.json(loc);
+};
+
+
+exports.geoapiPoint = function(req, res){
+  console.log('API call: geoapiPoint');
+  var pid = req.params.pid;
+  var pointid = req.params.pointid;
+  // console.log(pid);
+  var loc = getLocationsByPIdPointid(pid, pointid);
   // console.log(loc);
   res.json(loc);
 };

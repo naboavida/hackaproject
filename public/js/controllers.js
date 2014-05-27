@@ -401,7 +401,11 @@ function DemoController($scope, $http, $routeParams, $location){
       $location.path( "/dashboard/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid );
   });
 
-  $http.get('/geoapi/'+$scope.pid).
+  var get_url = '/geoapi/'+$scope.pid;
+  if($scope.pointid != null || $scope.pointid != undefined)
+    get_url = '/geoapi/'+$scope.pid+'/'+$scope.pointid;
+  
+  $http.get(get_url).
     success(function(data, status) {
       console.log("yeah read geoapi!");
       console.log(data);

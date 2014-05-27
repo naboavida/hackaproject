@@ -78,6 +78,7 @@ app.put('/api/post/:id', api.editPost);
 app.delete('/api/post/:id', api.deletePost);
 
 app.get('/geoapi/:pid', api.geoapi);
+app.get('/geoapi/:pid/:pointid', api.geoapiPoint);
 app.post('/geoapi/addPoint/:pid', api.geoapiAddPoint);
 
 app.get('/api/activities/:pid', api.getActivities);

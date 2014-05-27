@@ -7,9 +7,11 @@ div
 		li
 			a(href='/dashboard/{{pid}}') Dashboard
 		li
+			a(href='/dashboard/{{pid}}/{{pointid}}') Point {{pointid}}
+		li
 			a(href='') Add Indicator...
 div(style='width:400px;margin-left:auto;margin-right:auto;margin-top:100px;')
-	h1 Add Indicator
+	h1 Add Indicator to Point {{pointid}}
 	div
 		li(ng-repeat='indicator in indicators')
 			p {{indicator.title}} {{indicator.value}} {{indicator.unit}}
@@ -20,5 +22,5 @@ div(style='width:400px;margin-left:auto;margin-right:auto;margin-top:100px;')
 			p: input(placeholder='Unit', name='unit', ng-model='form.unit')
 			p: input(placeholder='Alarm', name='alarm', ng-model='form.alarm')
 			p: button(ng-click='submitNewWidget()') Add
-	p: a(href='/dashboard/{{pid}}') Back
+	p: a(href='/dashboard/{{pid}}/{{pointid}}') Back
 	p: a(href='/') Home

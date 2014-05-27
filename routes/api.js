@@ -98,9 +98,18 @@ var activities = [ {"id":0, "activitiesList":[{"aid":0, "title":"Woo Sampling", 
                   {"id":2, "activitiesList":[] }  ];
 
 
+var pointDashboards = [ {"id": 0, "pointIndicators": [ {"pointid": 0, "coord":[{"x":32.666667, "y": -16.85}], 
+                                                                "indicators":[{"pointiid":0, "title":"Water Ruality", "value":4, "unit":"mg", "alarm":"yes" }] }, 
+                                                       {"pointid": 1, "coord":[{"x":32.666667, "y": -16.95}],
+                                                                "indicators":[] }
+                                                         ] } ];
+
+
 var nextIID = 3;
 var nextParmId = 2;
 var nextAID = 2;
+
+var nextPointIID = 2;
 
 
 // UTILS
@@ -147,6 +156,27 @@ function findDashboardIndicatorsById(pid) {
   });
   return result;
 }
+
+
+function findPointIndicatorsById(pid, pointid) {
+  var result = {};
+  // console.log(projects);
+  pointDashboards.forEach(function(pointDashboard){
+    if(pointDashboard.hasOwnProperty('id') ){
+      // console.log(project.id + " " + pid);
+      // console.log(project.id == pid);
+      if(pointDashboard.id == pid){
+        pointDashboard.pointIndicators.forEach(function(pointIndicator){
+          if(pointIndicator.pointid == pointid)
+            result = pointIndicator.indicators;
+        });
+        // result = dashboard.indicators;
+      }
+    }
+  });
+  return result;
+}
+
 
 function findDashboardIndicatorsIIDById(pid) {
   var result = [];
@@ -290,19 +320,37 @@ function findParameterByParmId(iid, parmid){
 
 
 
+// function getLocationsByPId(pid){
+//   var result = [];
+//   // console.log(projects);
+//   dashboards.forEach(function(indicator){
+//     if(indicator.hasOwnProperty('id') ){
+//       // console.log(project.id + " " + pid);
+//       // console.log(project.id == pid);
+//       if(indicator.id == pid){
+//         // console.log(indicator.indicators);
+//         indicator.indicators.forEach(function(ind){
+//           // console.log(ind.coord);
+//           if(ind.coord != undefined)
+//             result.push( {"x": ind.coord[0].x, "y": ind.coord[0].y } );
+//         });
+//       }
+//     }
+//   });
+//   return result;
+// }
+
+
 function getLocationsByPId(pid){
   var result = [];
   // console.log(projects);
-  dashboards.forEach(function(indicator){
+
+  pointDashboards.forEach(function(indicator){
     if(indicator.hasOwnProperty('id') ){
-      // console.log(project.id + " " + pid);
-      // console.log(project.id == pid);
       if(indicator.id == pid){
-        // console.log(indicator.indicators);
-        indicator.indicators.forEach(function(ind){
-          // console.log(ind.coord);
+        indicator.pointIndicators.forEach(function(ind){
           if(ind.coord != undefined)
-            result.push( {"x": ind.coord[0].x, "y": ind.coord[0].y } );
+            result.push( {"pointid":ind.pointid , "x": ind.coord[0].x, "y": ind.coord[0].y } );
         });
       }
     }
@@ -311,7 +359,21 @@ function getLocationsByPId(pid){
 }
 
 
+function getPointIndicatorById(pid){
+  var result = [];
+  console.log("getPointIndicatorById");
 
+  pointDashboards.forEach(function(indicator){
+    if(indicator.hasOwnProperty('id') ){
+      // console.log(indicator);
+
+      if(indicator.id == pid){
+        result = indicator.pointIndicators;
+      }
+    }
+  });
+  return result;
+}
 
 
 
@@ -360,6 +422,25 @@ exports.getDashboard = function(req, res){
   var result = {};
   result.project = project;
   result.indicators = indicators;
+
+  res.json(result);
+};
+
+
+
+exports.getDashboardPoint = function(req, res){
+  console.log('API call: getDashboardPoint');
+  var pid = req.params.pid;
+  var pointid = req.params.pointid;
+  console.log(pid + " " + pointid);
+
+  var project = findProjectById(pid);
+  var indicators = findPointIndicatorsById(pid, pointid);
+
+  var result = {};
+  result.project = project;
+  result.indicators = indicators;
+  console.log(indicators);
   res.json(result);
 };
 
@@ -380,7 +461,7 @@ exports.getIndicator = function(req, res){
 
 exports.addIndicator = function(req, res){
   console.log('API call: addIndicator');
-  // console.log(req.body);
+  console.log(req.body);
 
   var pid = req.params.pid;
 
@@ -397,6 +478,30 @@ exports.addIndicator = function(req, res){
 
   res.json(indicatorsResult);
 };
+
+
+exports.addPointIndicator = function(req, res){
+  console.log('API call: addPointIndicator');
+  console.log(req.body);
+
+  var pid = req.params.pid;
+  var pointid = req.params.pointid;
+
+  req.body.pointiid = nextPointIID;
+  nextPointIID++;
+
+  var indicatorsResult = findPointIndicatorsById(pid, pointid);
+  console.log(indicatorsResult);
+  indicatorsResult.push(req.body);
+
+  // // dps falta criar a entrada vazia no pointIndicators por causa dos parametros
+  // indicators.push( {"iid":req.body.iid, "parameters":[]} );
+
+  console.log(req.body);
+
+  res.json(indicatorsResult);
+};
+
 
 exports.addDashboardWidget = function(req, res){
   console.log('API call: addDashboardWidget');
@@ -460,6 +565,30 @@ exports.geoapi = function(req, res){
   res.json(loc);
 };
 
+exports.geoapiAddPoint = function(req, res){
+  console.log('API call: geoapiAddPoint');
+  console.log(req.body);
+  var pid = req.params.pid;
+
+  var pointIndicator = getPointIndicatorById(pid);
+
+  var currPointid = nextPointIID;
+  nextPointIID++;
+  var pointToAdd = { "pointid": currPointid, "coord":[{"x":req.body.lat, "y":req.body.lng}], "indicators":[]};
+
+  pointIndicator.push(pointToAdd);
+
+  // {"pointid": 1, "coord":[{"x":32.666667, "y": -16.95}],
+  //                                                               "indicators":[] }
+
+  // obter proximo pointid
+  // adicionar ao pointToAdd bem como os restantes x, y
+  // adicionar o pointToAdd ao pointIndicator
+  console.log(pointIndicator);
+
+  res.json(pointToAdd);
+};
+
 
 
 // obter todas as activities de um determinado projecto.
@@ -469,7 +598,7 @@ exports.getActivities = function(req, res){
 
   // obter todos os indicadores de um projecto
   var activities_arr = findProjectActivitiesById(pid);
-  console.log(activities_arr);
+  // console.log(activities_arr);
   // para cada indicador, obter as tarefas
 
   

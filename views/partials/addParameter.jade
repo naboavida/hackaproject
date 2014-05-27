@@ -1,5 +1,17 @@
+div
+	ul.breadcrumb
+		li
+			a(href='/') Home
+		li
+			a(href='/projects') Projects
+		li
+			a(href='/dashboard/{{pid}}') Dashboard
+		li
+			a(href='/indicator/{{pid}}/{{iid}}') Indicator
+		li
+			a(href='') Add Parameter...
 div(style='width:400px;margin-left:auto;margin-right:auto;margin-top:100px;')
-	h1 Add a Parameter
+	h1 Add Parameter
 	div(ng-controller="ParameterCtrl")
 		li(ng-repeat='parameter in parameters')
 			p {{parameter.title}} {{parameter.value}}

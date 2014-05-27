@@ -160,6 +160,47 @@ function DashboardCtrl($scope, $http, $routeParams){
 };
 
 
+function DashboardPointCtrl($scope, $http, $routeParams){
+  console.log('DashboardPointCtrl');
+  $scope.pid = $routeParams.pid;
+  $scope.pointid = $routeParams.pointid;
+  
+  $http.get('/api/pointdashboard/'+$scope.pid+"/"+$scope.pointid).
+    success(function(data, status) {
+      console.log("yeah read!");
+      console.log(data);
+      $scope.project = data.project;
+      $scope.indicators = data.indicators;
+      // console.log($scope.indicators);
+    }).
+    error(function (data, status) {
+      $scope.data = data || "Request failed";
+    });
+
+
+    $scope.submitNewWidget = function() {
+      console.log('submitNewWidget');
+      $http.post('/api/indicator/'+$scope.pid+"/"+$scope.pointid, $scope.form).
+        success(function(data, status) {
+          console.log("yeah write!" + status);
+          console.log(data);
+
+          $scope.indicators = data;
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+
+      // $scope.projects.push($scope.form);
+      $scope.form = {};
+      // fazer o post
+      // obter o indicators q este post retorna
+    }
+  
+};
+
+
+
 function IndicatorCtrl($scope, $http, $routeParams){
   console.log('IndicatorCtrl');
   $scope.pid = $routeParams.pid;
@@ -282,9 +323,29 @@ function BulletCtrl($scope) {
 
 }
 
-function DemoController($scope, $http, $routeParams){
+function DemoController($scope, $http, $routeParams, $location){
   console.log("DemoController!!!");
   $scope.pid = $routeParams.pid;
+  $scope.pointid = $routeParams.pointid;
+
+  console.log($scope);
+
+  // leafletData.getMap().then(function(map) {
+  //     // map.fitBounds([ [40.712, -74.227], [40.774, -74.125] ]);
+
+  //     if($scope.pointid != null && $scope.pointid != undefined){
+  //       console.log("center on point");
+  //       map.setView([32.666667,-16.75], 9);
+  //     } else {
+  //       // center on madeira ----- this is hardcoded!!!!!
+  //       console.log("center on map center");
+  //       map.setView([32.666667,-16.85], 4);
+  //     }
+  // });
+
+  
+
+  $scope.addPointMode = false;
 
   angular.extend($scope, {
       london: {
@@ -302,20 +363,48 @@ function DemoController($scope, $http, $routeParams){
 
   $scope.markers = new Array();
 
-  // $scope.$on("leafletDirectiveMap.click", function(event, args){
-  //     var leafEvent = args.leafletEvent;
+  // add markers - for now - only when addPoint mode is activated (dashboards)
+  $scope.$on("leafletDirectiveMap.click", function(event, args){
+      var leafEvent = args.leafletEvent;
+      if($scope.addPointMode){
+        // $scope.markers.push({
+        //     lat: leafEvent.latlng.lat,
+        //     lng: leafEvent.latlng.lng,
+        //     message: "My Added Marker"
+        // });
+        var point = leafEvent.latlng;
+        console.log("point");
+        console.log(point);
+        $http.post('/geoapi/addPoint/'+$scope.pid, point).
+          success(function(data) {
+            console.log("yeah postPoint added!");
+            // $location.path('/projects');
+            console.log(data);
+            $scope.markers.push({
+              lat: data.coord[0].x,
+              lng: data.coord[0].y,
+              pointid: data.pointid,
+              message: "added"
+            });
+          });
+      }
+  });
 
-  //     $scope.markers.push({
-  //         lat: leafEvent.latlng.lat,
-  //         lng: leafEvent.latlng.lng,
-  //         message: "My Added Marker"
-  //     });
-  // });
+
+  $scope.$on('leafletDirectiveMarker.click', function(e, args) {
+      // Args will contain the marker name and other relevant information
+      console.log("Leaflet Click");
+      console.log(args);
+      console.log($scope.markers[args.markerName].pointid);
+      // agora é ir ao /dashboard/:pid/:pointid e ele faz o render do dashboard para o projectid e pointid
+      // console.log("/dashboardPoint/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid);
+      $location.path( "/dashboard/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid );
+  });
 
   $http.get('/geoapi/'+$scope.pid).
     success(function(data, status) {
       console.log("yeah read geoapi!");
-      // console.log(data);
+      console.log(data);
       // $scope.project = data.title;
       // $scope.parameter = data;
       // console.log($scope.indicators);
@@ -324,6 +413,7 @@ function DemoController($scope, $http, $routeParams){
         $scope.markers.push({
           lat: data[d].x,
           lng: data[d].y,
+          pointid: data[d].pointid,
           message: "added"
         });
       }
@@ -332,6 +422,18 @@ function DemoController($scope, $http, $routeParams){
     error(function (data, status) {
       $scope.data = data || "Request failed";
     });
+
+    
+
+    $scope.addPoint = function(){
+      console.log("addPoint");
+      if(!$scope.addPointMode){
+        $scope.addPointMode = true;
+      } else {
+        $scope.addPointMode = false;
+      }
+        
+    };
 
 }
 

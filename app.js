@@ -63,6 +63,9 @@ app.get('/api/dashboard/:pid', api.getDashboard);
 app.get('/api/indicator/:iid', api.getIndicator);
 app.post('/api/indicator/:pid', api.addIndicator);
 
+app.get('/api/pointdashboard/:pid/:pointid', api.getDashboardPoint);
+app.post('/api/indicator/:pid/:pointid', api.addPointIndicator);
+
 app.get('/api/parameter/:iid/:parmid', api.getParameter);
 app.post('/api/parameter/:pid/:iid', api.addParameter);
 app.get('/api/parameterReadings/:iid/:parmid', api.getParameterReadings);
@@ -75,6 +78,7 @@ app.put('/api/post/:id', api.editPost);
 app.delete('/api/post/:id', api.deletePost);
 
 app.get('/geoapi/:pid', api.geoapi);
+app.post('/geoapi/addPoint/:pid', api.geoapiAddPoint);
 
 app.get('/api/activities/:pid', api.getActivities);
 app.post('/api/activities/:pid', api.setActivities);

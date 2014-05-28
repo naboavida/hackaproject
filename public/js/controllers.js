@@ -408,6 +408,42 @@ function ParameterPointCtrl($scope, $http, $routeParams){
     }
 
 
+    $scope.submitNewPointMultipleReadings = function(){
+      console.log('submitNewPointMultipleReadings');
+      // console.log($scope.sentence);
+      // console.log(typeof($scope.sentence));
+      var lines = $scope.sentence.split( '\n' );
+      console.log(lines);
+
+
+
+      $http.post('/api/parameterPointMultipleReadings/'+$scope.pointiid+'/'+$scope.pointparmid, lines).
+        success(function(data, status) {
+          console.log("yeah write parameterPointMultipleReadings!" + status);
+          // console.log(data);
+
+          $scope.parameter = data;
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+
+      // $scope.projects.push($scope.form);
+      $scope.sentence = '';
+
+      // é uma coluna (apenas valor) ou sao duas colunas (data e valor)
+      // se sao duas colunas, fazer a divisao [data, valor] para dois arrays
+      // fazer mais a frente qd suportarmos datas no historico
+
+      // partir por cada \n
+
+      // construir array
+      // enviar array no post
+      // dps na api, é juntar ao array actual adicionando os readids correctos
+
+    }
+
+
 };
 
 

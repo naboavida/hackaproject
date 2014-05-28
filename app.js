@@ -75,6 +75,7 @@ app.get('/api/parameterReadings/:iid/:parmid', api.getParameterReadings);
 app.post('/api/parameterReadings/:iid/:parmid', api.addParameterReadings);
 app.get('/api/parameterPointReadings/:pointiid/:pointparmid', api.getParameterPointReadings);
 app.post('/api/parameterPointReadings/:pointiid/:pointparmid', api.addParameterPointReadings);
+app.post('/api/parameterPointMultipleReadings/:pointiid/:pointparmid', api.addParameterPointMultipleReadings);
 
 app.get('/api/orderedPointValuesOfParameter/:pid/:iid/:parmid', api.getOrderedPointValuesOfParameter);
 

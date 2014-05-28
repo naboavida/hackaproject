@@ -105,12 +105,20 @@ var pointDashboards = [ {"id": 0, "pointIndicators": [ {"pointid": 0, "coord":[{
                                                          ] },
                         {"id": 1, "pointIndicators":[] } ];
 
+var pointIndicators = [ {"pointiid":0, "parameters":[ {"pointparmid":0, "title":"ph", "value":3.3, "unit":"lvl", 
+                                                    "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3] ]  } ] } ];
+
 
 var nextIID = 3;
 var nextParmId = 2;
+
 var nextAID = 2;
 
-var nextPointIID = 2;
+var nextPointID = 2;
+
+var nextPointIID = 1;
+var nextPointParmId = 1;
+
 
 
 // UTILS
@@ -290,6 +298,24 @@ function findIndicatorById(iid){
   return result;
 }
 
+function findIndicatorByPointiid(pointiid){
+  var result = {};
+  // console.log(projects);
+  pointDashboards.forEach(function(dashboard){
+    if(dashboard.hasOwnProperty('id') ){
+      dashboard.pointIndicators.forEach(function(point){
+        point.indicators.forEach(function(indicator){
+          if(indicator.pointiid == pointiid){
+            result = indicator;
+          }
+        });
+      });
+    }
+  });
+  return result;
+}
+
+
 
 function findIndicatorParametersByIId(iid) {
   var result = [];
@@ -308,6 +334,22 @@ function findIndicatorParametersByIId(iid) {
 }
 
 
+function findIndicatorParametersByPointIId(pointiid) {
+  var result = [];
+  // console.log(projects);
+  pointIndicators.forEach(function(pointIndicator){
+    if(pointIndicator.hasOwnProperty('pointiid') ){
+      // console.log(pointIndicator.id + " " + iid);
+      // console.log(pointIndicator.id == iid);
+      // console.log(pointIndicator);
+      if(pointIndicator.pointiid == pointiid){
+        result = pointIndicator.parameters;
+      }
+    }
+  });
+  return result;
+}
+
 
 function findParameterByParmId(iid, parmid){
   var result = {};
@@ -318,6 +360,18 @@ function findParameterByParmId(iid, parmid){
   });
   return result;
 }
+
+
+function findParameterByPointParmId(pointiid, pointparmid){
+  var result = {};
+  var parameters = findIndicatorParametersByPointIId(pointiid);
+  parameters.forEach(function(parameter){
+    if(parameter.pointparmid == pointparmid)
+      result = parameter;
+  });
+  return result;
+}
+
 
 
 
@@ -480,6 +534,21 @@ exports.getIndicator = function(req, res){
   res.json(result);
 };
 
+exports.getPointIndicator = function(req, res){
+  console.log('API call: getPointIndicator');
+  var pointiid = req.params.pointiid;
+  var pointid = req.params.pointid;
+  var result = {};
+
+  var indicator = findIndicatorByPointiid(pointiid);
+  var parameters = findIndicatorParametersByPointIId(pointiid);
+
+  result.indicator = indicator;
+  result.parameters = parameters;
+
+  res.json(result);
+};
+
 exports.addIndicator = function(req, res){
   console.log('API call: addIndicator');
   console.log(req.body);
@@ -517,6 +586,8 @@ exports.addPointIndicator = function(req, res){
 
   // // dps falta criar a entrada vazia no pointIndicators por causa dos parametros
   // indicators.push( {"iid":req.body.iid, "parameters":[]} );
+  pointIndicators.push({"pointiid":req.body.pointiid, "parameters":[] });
+  
 
   console.log(req.body);
 
@@ -549,6 +620,22 @@ exports.getParameter = function(req, res){
 };
 
 
+
+
+exports.getParameterPoint = function(req, res){
+  console.log('API call: getParameterPoint');
+  var pointiid = req.params.pointiid;
+  var pointparmid = req.params.pointparmid;
+  var result = {};
+
+  var parameter = findParameterByPointParmId(pointiid, pointparmid);
+
+  result = parameter;
+
+  res.json(result);
+};
+
+
 exports.addParameter = function(req, res){
   console.log('API call: addParameter');
   var result = {};
@@ -568,13 +655,34 @@ exports.addParameter = function(req, res){
   // console.log(parameters);
 
 
-  console.log("Dashboards");
+  // console.log("Dashboards");
   // console.log(dashboards);
-  console.log("Indicators");
+  // console.log("Indicators");
   // console.log(indicators);
 
   res.json(parameters);
 };
+
+exports.addParameterPoint = function(req, res){
+  console.log('API call: addParameterPoint');
+  var result = {};
+  var pid = req.params.pid;
+  var pointiid = req.params.pointiid;
+  var pointid = req.params.pointid;
+  console.log("pid: "+pid+" pointiid: "+pointiid+" pointid: "+pointid);
+  // console.log(req.body);
+  req.body.pointparmid = nextPointParmId;
+  nextPointParmId++;
+
+  var parameters = findIndicatorParametersByPointIId(pointiid);
+  
+  console.log("Pushing parm into parms");
+  // console.log(parameters);
+  parameters.push(req.body);
+
+  res.json(parameters);
+};
+
 
 
 exports.geoapi = function(req, res){
@@ -604,8 +712,8 @@ exports.geoapiAddPoint = function(req, res){
 
   var pointIndicator = getPointIndicatorById(pid);
 
-  var currPointid = nextPointIID;
-  nextPointIID++;
+  var currPointid = nextPointID;
+  nextPointID++;
   var pointToAdd = { "pointid": currPointid, "coord":[{"x":req.body.lat, "y":req.body.lng}], "indicators":[]};
 
   pointIndicator.push(pointToAdd);

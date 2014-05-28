@@ -36,9 +36,17 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         templateUrl: 'partials/indicator',
         controller: IndicatorCtrl
       }).
+      when('/indicator/:pid/:pointiid/:pointid', {
+        templateUrl: 'partials/indicatorPoint',
+        controller: IndicatorPointCtrl
+      }).
       when('/parameter/:pid/:iid/:parmid', {
         templateUrl: 'partials/parameter',
         controller: ParameterCtrl
+      }).
+      when('/parameter/:pid/:pointiid/:pointparmid/:pointid', {
+        templateUrl: 'partials/parameterPoint',
+        controller: ParameterPointCtrl
       }).
       when('/parameterHistory/:pid/:iid/:parmid', {
         templateUrl: 'partials/parameterHistory',
@@ -47,6 +55,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
       when('/addParameter/:pid/:iid', {
         templateUrl: 'partials/addParameter',
         controller: ParameterCtrl
+      }).
+      when('/addParameter/:pid/:pointiid/:pointid', {
+        templateUrl: 'partials/addParameterPoint',
+        controller: ParameterPointCtrl
       }).
       when('/calendar/:pid', {
         templateUrl: 'partials/calendar',

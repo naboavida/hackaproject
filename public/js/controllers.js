@@ -171,7 +171,7 @@ function DashboardPointCtrl($scope, $http, $routeParams){
       console.log(data);
       $scope.project = data.project;
       $scope.indicators = data.indicators;
-      // console.log($scope.indicators);
+      console.log($scope.indicators);
     }).
     error(function (data, status) {
       $scope.data = data || "Request failed";
@@ -209,6 +209,29 @@ function IndicatorCtrl($scope, $http, $routeParams){
   // console.log('pid: '+$scope.pid + ' iid: ' + $scope.iid + ' parmid: '+$scope.parmid);
 
   $http.get('/api/indicator/'+$scope.iid).
+    success(function(data, status) {
+      // console.log("yeah read!");
+      // console.log(data);
+      // $scope.project = data.title;
+      $scope.indicator = data.indicator;
+      $scope.parameters = data.parameters;
+      // console.log($scope.indicators);
+    }).
+    error(function (data, status) {
+      $scope.data = data || "Request failed";
+    });
+};
+
+
+function IndicatorPointCtrl($scope, $http, $routeParams){
+  console.log('IndicatorPointCtrl');
+  $scope.pid = $routeParams.pid;
+  $scope.pointiid = $routeParams.pointiid;
+  $scope.parmid = $routeParams.parmid;
+  $scope.pointid = $routeParams.pointid;
+  console.log('pid: '+$scope.pid + ' iid: ' + $scope.iid + ' parmid: '+$scope.parmid);
+
+  $http.get('/api/indicator/'+$scope.pointiid+'/'+$scope.pointid).
     success(function(data, status) {
       // console.log("yeah read!");
       // console.log(data);
@@ -278,6 +301,67 @@ function ParameterCtrl($scope, $http, $routeParams){
       // obter o indicators q este post retorna
     }
 };
+
+
+function ParameterPointCtrl($scope, $http, $routeParams){
+  console.log('ParameterPointCtrl');
+  $scope.pid = $routeParams.pid;
+  $scope.pointiid = $routeParams.pointiid;
+  $scope.pointparmid = $routeParams.pointparmid;
+  $scope.pointid = $routeParams.pointid;
+  // console.log('pid: '+$scope.pid + ' iid: ' + $scope.iid + ' parmid: '+$scope.parmid);
+
+  $http.get('/api/indicator/'+$scope.pointiid+'/'+$scope.pointid).
+    success(function(data, status) {
+      // console.log("yeah read!");
+      // console.log(data);
+      // $scope.project = data.title;
+      $scope.indicator = data.indicator;
+      $scope.parameters = data.parameters;
+      // console.log($scope.indicators);
+    }).
+    error(function (data, status) {
+      $scope.data = data || "Request failed";
+    });
+
+
+    if($scope.pointparmid != undefined){
+      // para view get parameter
+      // console.log("GOING TO FETCH FOR PointIID and PointParmID: "+'/api/parameter/'+$scope.pointiid+'/'+$scope.pointparmid);
+      $http.get('/api/parameterPoint/'+$scope.pointiid+'/'+$scope.pointparmid).
+        success(function(data, status) {
+          // console.log("yeah read!");
+          // console.log(data);
+          // $scope.project = data.title;
+          $scope.parameter = data;
+          // console.log($scope.indicators);
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+    }
+  
+
+  $scope.submitNewParameter = function() {
+      // console.log('submitNewParameter');
+      $http.post('/api/parameter/'+$scope.pid+'/'+$scope.pointiid+'/'+$scope.pointid, $scope.form).
+        success(function(data, status) {
+          // console.log("yeah write!" + status);
+          // console.log(data);
+          $scope.parameters = data;
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+
+      // $scope.projects.push($scope.form);
+      $scope.form = {};
+      // fazer o post
+      // obter o indicators q este post retorna
+    }
+};
+
+
 
 
 function ExampleCtrl($scope, $http, $routeParams){
@@ -404,7 +488,7 @@ function DemoController($scope, $http, $routeParams, $location){
   var get_url = '/geoapi/'+$scope.pid;
   if($scope.pointid != null || $scope.pointid != undefined)
     get_url = '/geoapi/'+$scope.pid+'/'+$scope.pointid;
-  
+
   $http.get(get_url).
     success(function(data, status) {
       console.log("yeah read geoapi!");

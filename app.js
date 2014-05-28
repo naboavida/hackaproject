@@ -61,13 +61,16 @@ app.post('/api/projects', api.addProject);
 
 app.get('/api/dashboard/:pid', api.getDashboard);
 app.get('/api/indicator/:iid', api.getIndicator);
+app.get('/api/indicator/:pointiid/:pointid', api.getPointIndicator);
 app.post('/api/indicator/:pid', api.addIndicator);
 
 app.get('/api/pointdashboard/:pid/:pointid', api.getDashboardPoint);
 app.post('/api/indicator/:pid/:pointid', api.addPointIndicator);
 
 app.get('/api/parameter/:iid/:parmid', api.getParameter);
+app.get('/api/parameterPoint/:pointiid/:pointparmid', api.getParameterPoint);
 app.post('/api/parameter/:pid/:iid', api.addParameter);
+app.post('/api/parameter/:pid/:pointiid/:pointid', api.addParameterPoint);
 app.get('/api/parameterReadings/:iid/:parmid', api.getParameterReadings);
 
 app.get('/api/posts', api.posts);

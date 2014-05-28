@@ -72,6 +72,7 @@ app.get('/api/parameterPoint/:pointiid/:pointparmid', api.getParameterPoint);
 app.post('/api/parameter/:pid/:iid', api.addParameter);
 app.post('/api/parameter/:pid/:pointiid/:pointid', api.addParameterPoint);
 app.get('/api/parameterReadings/:iid/:parmid', api.getParameterReadings);
+app.post('/api/parameterReadings/:iid/:parmid', api.addParameterReadings);
 app.get('/api/parameterPointReadings/:pointiid/:pointparmid', api.getParameterPointReadings);
 app.post('/api/parameterPointReadings/:pointiid/:pointparmid', api.addParameterPointReadings);
 

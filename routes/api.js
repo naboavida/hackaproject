@@ -449,6 +449,20 @@ function getPointIndicatorById(pid){
 
 
 
+function ordergetBiggestXInReadings(readings_arr){
+  if(readings_arr != undefined && readings_arr != null && readings_arr.length != 0){
+    // console.log("LAST READING IS "+readings_arr[readings_arr.length-1][0]);
+    return (readings_arr[readings_arr.length-1][0]+1);
+  } else {
+    return 0;
+  }
+  // readings_arr is something like [ [date/order, value] ]
+}
+
+
+
+
+
 
 
 
@@ -645,6 +659,7 @@ exports.addParameter = function(req, res){
   // console.log(req.body);
   req.body.parmid = nextParmId;
   nextParmId++;
+  req.body.readings = [];
 
   var parameters = findIndicatorParametersByIId(iid);
   
@@ -805,28 +820,24 @@ exports.getParameterPointReadings = function(req, res){
 }
 
 
-function ordergetBiggestXInReadings(readings_arr){
-  if(readings_arr != undefined && readings_arr != null && readings_arr.length != 0){
-    console.log("LAST READING IS "+readings_arr[readings_arr.length-1][0]);
-    return (readings_arr[readings_arr.length-1][0]+1);
-  } else {
-    return 0;
-  }
-  // readings_arr is something like [ [date/order, value] ]
-  
-}
 
-exports.addParameterPointReadings = function(req, res){
-  console.log('API call: addParameterPointReadings');
-  var pointiid = req.params.pointiid;
-  var pointparmid = req.params.pointparmid;
+
+
+exports.addParameterReadings = function(req, res){
+  console.log('API call: addParameterReadings');
+  var iid = req.params.iid;
+  var parmid = req.params.parmid;
+
+  console.log(iid + " " + parmid);
+
 
   var readingToAdd = [];
 
-  console.log(pointiid + " " + pointparmid);
+  // console.log(pointiid + " " + pointparmid);
 
   // get readings entry for pointiid and pointparmid
-  var parameter = findParameterByPointParmId(pointiid, pointparmid);
+  var parameter = findParameterByParmId(iid, parmid);
+  console.log("parameter");
   console.log(parameter);
   var readings = parameter.readings;
 
@@ -836,7 +847,40 @@ exports.addParameterPointReadings = function(req, res){
   // see if date was provided. if not, we need to find the last reading id, increment it and set to readingToAdd
 
   var reading_id = ordergetBiggestXInReadings(parameter.readings);
-  console.log("reading_id : "+reading_id);
+  // console.log("reading_id : "+reading_id);
+
+  if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
+    readingToAdd = [ reading_id, req.body.value ]
+  }
+
+  // push readingToAdd to the readings array
+  readings.push(readingToAdd);
+
+  res.json(parameter);
+}
+
+
+exports.addParameterPointReadings = function(req, res){
+  console.log('API call: addParameterPointReadings');
+  var pointiid = req.params.pointiid;
+  var pointparmid = req.params.pointparmid;
+
+  var readingToAdd = [];
+
+  // console.log(pointiid + " " + pointparmid);
+
+  // get readings entry for pointiid and pointparmid
+  var parameter = findParameterByPointParmId(pointiid, pointparmid);
+  // console.log(parameter);
+  var readings = parameter.readings;
+
+  
+  parameter.value = req.body.value;
+
+  // see if date was provided. if not, we need to find the last reading id, increment it and set to readingToAdd
+
+  var reading_id = ordergetBiggestXInReadings(parameter.readings);
+  // console.log("reading_id : "+reading_id);
 
   if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
     readingToAdd = [ reading_id, req.body.value ]

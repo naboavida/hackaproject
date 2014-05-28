@@ -51,6 +51,11 @@ div
 						div.line
 							div.line-item.value {{parameter.value/2}}
 							div.line-item.unit {{parameter.unit}}
+			div
+				h4 Add reading
+				p: input(placeholder='Value', type='number', ng-model='readingForm.value')
+				p: input(placeholder='Date (optional)', type='date', ng-model='readingForm.date')
+				p: button(ng-click='submitNewReading()') Add
 			//- div
 			//- 	h5 Parameter goals
 			//- 	p Title: {{parameter.title}}

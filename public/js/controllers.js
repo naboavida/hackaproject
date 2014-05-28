@@ -300,6 +300,31 @@ function ParameterCtrl($scope, $http, $routeParams){
       // fazer o post
       // obter o indicators q este post retorna
     }
+
+
+    $scope.readingForm = {};
+
+    $scope.submitNewReading = function(){
+      console.log('submitNewReading');
+      console.log($scope.readingForm);
+
+      $http.post('/api/parameterReadings/'+$scope.iid+'/'+$scope.parmid, $scope.readingForm).
+        success(function(data, status) {
+          console.log("yeah write parameterPointReadings!" + status);
+          // console.log(data);
+
+          $scope.parameter = data;
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+
+      // $scope.projects.push($scope.form);
+      $scope.readingForm = {};
+
+    }
+
+
 };
 
 

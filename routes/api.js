@@ -99,14 +99,18 @@ var activities = [ {"id":0, "activitiesList":[{"aid":0, "title":"Woo Sampling", 
 
 
 var pointDashboards = [ {"id": 0, "pointIndicators": [ {"pointid": 0, "coord":[{"x":32.666667, "y": -16.85}], 
-                                                                "indicators":[{"pointiid":0, "title":"Water Ruality", "value":4, "unit":"mg", "alarm":"yes" }] }, 
+                                                                "indicators":[{"pointiid":0, "title":"Water Quality", "value":4, "unit":"mg", "alarm":"yes" }] }, 
                                                        {"pointid": 1, "coord":[{"x":32.666667, "y": -16.95}],
-                                                                "indicators":[] }
+                                                                "indicators":[{"pointiid":1, "title":"Water Quality", "value":2, "unit":"mg", "alarm":"yes" }] }
                                                          ] },
                         {"id": 1, "pointIndicators":[] } ];
 
 var pointIndicators = [ {"pointiid":0, "parameters":[ {"pointparmid":0, "title":"ph", "value":3.3, "unit":"lvl", 
-                                                    "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3], [7,3.3] ]  } ] } ];
+                                                    "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3], [7,3.3] ]  } ] },
+                        {"pointiid":1, "parameters":[ {"pointparmid":1, "title":"ph", "value":7, "unit":"lvl", 
+                                                    "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3], [7,7] ]  },
+                                                    {"pointparmid":2, "title":"Ferro", "value":200, "unit":"lvl", 
+                                                    "readings":[[0, 100], [1,200], [3,175], [4,200] ]  } ] } ];
 
 
 var nextIID = 3;
@@ -116,8 +120,8 @@ var nextAID = 2;
 
 var nextPointID = 2;
 
-var nextPointIID = 1;
-var nextPointParmId = 1;
+var nextPointIID = 2;
+var nextPointParmId = 3;
 
 
 
@@ -137,7 +141,7 @@ function findMaxProjectId() {
 function findProjectById(pid) {
   var result = {};
   result.title = 'NOT FOUND';
-  // console.log(projects);
+  // console.log(dashboards);
   projects.forEach(function(project){
     if(project.hasOwnProperty('id') ){
       // console.log(project.id + " " + pid);
@@ -189,7 +193,7 @@ function findPointIndicatorsById(pid, pointid) {
 
 function findDashboardIndicatorsIIDById(pid) {
   var result = [];
-  // console.log(projects);
+  // console.log(dashboards);
   dashboards.forEach(function(dashboard){
     if(dashboard.hasOwnProperty('id') ){
       // console.log(project.id + " " + pid);
@@ -706,7 +710,8 @@ exports.geoapi = function(req, res){
   var pid = req.params.pid;
   // console.log(pid);
   var loc = getLocationsByPId(pid);
-  // console.log(loc);
+  console.log("loc");
+  console.log(loc);
   res.json(loc);
 };
 
@@ -891,3 +896,73 @@ exports.addParameterPointReadings = function(req, res){
 
   res.json(parameter);
 };
+
+
+
+exports.getOrderedPointValuesOfParameter = function(req, res){
+  console.log('API call: getOrderedPointValuesOfParameter');
+  var pid = req.params.pid;
+  var iid = req.params.iid;
+  var parmid = req.params.parmid;
+  var pointValues = [];
+  var pointCoords = [];
+
+  console.log(pid + " " + parmid);
+
+  var parameterToMatch = findParameterByParmId(iid, parmid);
+  var titleToMatch = parameterToMatch.title;
+  console.log("titleToMatch");
+  console.log(titleToMatch);
+
+  // :pid (para ir buscar todos os iid deste pid)
+  var pointIndicators = getPointIndicatorById(pid);
+  // console.log("indicators");
+  // console.log(indicators);
+  var iid_arr = [];
+  pointIndicators.forEach(function(point){
+    // console.log("point");
+    // console.log(point);
+    var pointid = point.pointid;
+    var coord = point.coord;
+
+    var indicators = point.indicators;
+    // console.log("indicators");
+    // console.log(indicators);
+    indicators.forEach(function(ind){
+      var parameter = findIndicatorParametersByPointIId(ind.pointiid);
+      // console.log("parameter");
+      // console.log(parameter);
+      parameter.forEach(function(parm){
+        // console.log("toAdd");
+        // console.log(pointid + " " + parm.value);
+        if(parm.title == titleToMatch){
+          pointValues.push([ pointid, parm.value ]);
+          var locToAdd = coord[0];
+          locToAdd.pointid = pointid;
+          pointCoords.push(locToAdd);
+        }
+      });
+    })
+    
+  });
+
+
+  console.log("comparing!");
+  pointValues.sort(function(a,b) {
+    return parseInt(b) - parseInt(a);
+  });
+
+  var toRet = {};
+  toRet.ranking = pointValues;
+  console.log("pointCoords");
+  console.log(pointCoords);
+  // toRet.locations = getLocationsByPId(pid); // AQUI TENHO DE FILTRAR PELOS pointid acima filtrados
+  toRet.locations = pointCoords; // AQUI TENHO DE FILTRAR PELOS pointid acima filtrados
+
+  // para cada iid
+  // :parmid (para dps ir buscar o parameter Title e procurar todos parameters nos iid q têm este Title)
+  // no retorno, criar array de elemToAdd. para cada elemToAdd, ter o pointid e value
+
+  // var pointValues = [ [ 3 , 88] , [ 8 , 55] , [ 2 , 30] , [ 5 , 20] , [ 10 , 19] , [ 9 , 18], [ 1 , 4] , [ 7 , 3]  ];
+  res.json(toRet);
+}

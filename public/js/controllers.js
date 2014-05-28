@@ -302,27 +302,27 @@ function ParameterCtrl($scope, $http, $routeParams){
     }
 
 
-    $scope.readingForm = {};
+    // $scope.readingForm = {};
 
-    $scope.submitNewReading = function(){
-      console.log('submitNewReading');
-      console.log($scope.readingForm);
+    // $scope.submitNewReading = function(){
+    //   console.log('submitNewReading');
+    //   console.log($scope.readingForm);
 
-      $http.post('/api/parameterReadings/'+$scope.iid+'/'+$scope.parmid, $scope.readingForm).
-        success(function(data, status) {
-          console.log("yeah write parameterPointReadings!" + status);
-          // console.log(data);
+    //   $http.post('/api/parameterReadings/'+$scope.iid+'/'+$scope.parmid, $scope.readingForm).
+    //     success(function(data, status) {
+    //       console.log("yeah write parameterPointReadings!" + status);
+    //       // console.log(data);
 
-          $scope.parameter = data;
-        }).
-        error(function (data, status) {
-          $scope.data = data || "Request failed";
-        });
+    //       $scope.parameter = data;
+    //     }).
+    //     error(function (data, status) {
+    //       $scope.data = data || "Request failed";
+    //     });
 
-      // $scope.projects.push($scope.form);
-      $scope.readingForm = {};
+    //   // $scope.projects.push($scope.form);
+    //   $scope.readingForm = {};
 
-    }
+    // }
 
 
 };
@@ -415,28 +415,80 @@ function ParameterPointCtrl($scope, $http, $routeParams){
 
 function ExampleCtrl($scope, $http, $routeParams){
   console.log("ExampleCtrl");
+  var pid = $routeParams.pid;
   var iid = $routeParams.iid;
   var parmid = $routeParams.parmid;
 
 
-  $scope.exampleData = [
-    {
-        "key": "History",
-        "values": []
-    }];
+  // isto tb vai ser importante para o outro grafico
+  $scope.xAxisTickFormatFunction = function(){
+      return function(d){
+          return d3.time.format('%b')(new Date(d));
+      }
+  }
 
-  $http.get('/api/parameterReadings/'+iid+'/'+parmid).
-    success(function(data, status) {
-      // console.log("yeah read readings!");
-      $scope.exampleData = [
-        {
-            "key": "History",
-            "values": data
-        }];
-    }).
-    error(function (data, status) {
-      $scope.data = data || "Request failed";
-    });
+
+  var colorCategory = d3.scale.category20b();
+  $scope.colorFunction = function() {
+      return function(d, i) {
+          return colorCategory(i);
+      };
+  }
+
+  
+
+    // // para isto, é preciso colocar o xAxisTickFormat="xAxisTickFormatFunction()" na tag  
+    // $scope.exampleDataRanking = [
+    // {
+    // "key": "Series 1",
+    // "values": [ [ 1025409600000 , 0] , [ 1028088000000 , -6.3382185140371] , [ 1030766400000 , -5.9507873460847] , [ 1033358400000 , -11.569146943813] , [ 1036040400000 , -5.4767332317425] , [ 1038632400000 , 0.50794682203014] , [ 1041310800000 , -5.5310285460542] , [ 1043989200000 , -5.7838296963382] , [ 1046408400000 , -7.3249341615649] , [ 1049086800000 , -6.7078630712489] , [ 1051675200000 , 0.44227126150934] , [ 1054353600000 , 7.2481659343222] , [ 1056945600000 , 9.2512381306992] ]
+    // }
+    // ];
+
+    // [ [ pointid, value]* ]
+    $scope.exampleDataRanking = [
+    {
+    "key": "Series 1",
+    "values": [ [ 3 , 88] , [ 8 , 55] , [ 2 , 30] , [ 5 , 20] , [ 10 , 19] , [ 9 , 18]  ]
+    }
+    ];
+
+    $http.get('/api/orderedPointValuesOfParameter/'+pid+'/'+iid+'/'+parmid).
+      success(function(data, status){
+        console.log("read ordered pointvalues");
+        console.log(data);
+        $scope.exampleDataRanking = [
+          {
+          "key": "Series 1",
+          "values": data.ranking
+          }
+          ];
+      }).
+      error(function(data, status){});
+
+
+    // $scope.exampleDataRanking = [{
+    //   "key": ""
+    // }];
+
+  // $scope.exampleData = [
+  //   {
+  //       "key": "History",
+  //       "values": []
+  //   }];
+
+  // $http.get('/api/parameterReadings/'+iid+'/'+parmid).
+  //   success(function(data, status) {
+  //     // console.log("yeah read readings!");
+  //     $scope.exampleData = [
+  //       {
+  //           "key": "History",
+  //           "values": data
+  //       }];
+  //   }).
+  //   error(function (data, status) {
+  //     $scope.data = data || "Request failed";
+  //   });
 }
 
 
@@ -605,8 +657,88 @@ function DemoController($scope, $http, $routeParams, $location){
       }
         
     };
+}
+
+
+
+
+function DemoOrderedPointsController($scope, $http, $routeParams, $location){
+  console.log("DemoOrderedPointsController!!!");
+  $scope.pid = $routeParams.pid;
+  $scope.iid = $routeParams.iid;
+  $scope.pointid = $routeParams.pointid;
+
+  // console.log($scope);
+
+  // leafletData.getMap().then(function(map) {
+  //     // map.fitBounds([ [40.712, -74.227], [40.774, -74.125] ]);
+
+  //     if($scope.pointid != null && $scope.pointid != undefined){
+  //       console.log("center on point");
+  //       map.setView([32.666667,-16.75], 9);
+  //     } else {
+  //       // center on madeira ----- this is hardcoded!!!!!
+  //       console.log("center on map center");
+  //       map.setView([32.666667,-16.85], 4);
+  //     }
+  // });
+
+  
+
+  $scope.addPointMode = false;
+
+  angular.extend($scope, {
+      london: {
+          lat: 51.505,
+          lng: -0.09,
+          zoom: 4
+      },
+      madeira: {
+          lat: 32.666667,
+          lng: -16.75,
+          zoom: 9
+      },
+      events: {}
+  });
+
+  $scope.markers = new Array();
+
+
+
+  $scope.$on('leafletDirectiveMarker.click', function(e, args) {
+      // Args will contain the marker name and other relevant information
+      console.log("Leaflet Click");
+      console.log(args);
+      console.log($scope.markers[args.markerName].pointid);
+      // agora é ir ao /dashboard/:pid/:pointid e ele faz o render do dashboard para o projectid e pointid
+      // console.log("/dashboardPoint/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid);
+      $location.path( "/dashboard/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid );
+  });
+
+
+
+  $http.get('/api/orderedPointValuesOfParameter/'+$scope.pid+'/'+$scope.iid+'/'+$scope.parmid).
+      success(function(data, status){
+        console.log("read ordered pointlocations");
+        console.log(data.locations);
+        $scope.markers = new Array();
+        
+        for(var d in data.locations){
+            // console.log(data[d]);
+            $scope.markers.push({
+              lat: data.locations[d].x,
+              lng: data.locations[d].y,
+              pointid: data.locations[d].pointid,
+              message: "added"
+            });
+          }
+      }).
+      error(function(data, status){});
 
 }
+
+
+
 
 
 var monthNames = [ "January", "February", "March", "April", "May", "June",

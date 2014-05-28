@@ -181,6 +181,12 @@ header .wrap{
   max-width: 1600px;
   margin: 0 auto;
 }
+
+.wrap{
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
 header #logo{
   /*float: left;*/
   display: block;

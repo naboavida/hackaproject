@@ -313,12 +313,12 @@ function ParameterPointCtrl($scope, $http, $routeParams){
 
   $http.get('/api/indicator/'+$scope.pointiid+'/'+$scope.pointid).
     success(function(data, status) {
-      // console.log("yeah read!");
+      console.log("yeah read!");
       // console.log(data);
       // $scope.project = data.title;
       $scope.indicator = data.indicator;
       $scope.parameters = data.parameters;
-      // console.log($scope.indicators);
+      console.log($scope.parameters);
     }).
     error(function (data, status) {
       $scope.data = data || "Request failed";
@@ -359,6 +359,30 @@ function ParameterPointCtrl($scope, $http, $routeParams){
       // fazer o post
       // obter o indicators q este post retorna
     }
+
+    $scope.readingForm = {};
+
+    $scope.submitNewPointReading = function(){
+      console.log('submitNewPointReading');
+      console.log($scope.readingForm);
+
+      $http.post('/api/parameterPointReadings/'+$scope.pointiid+'/'+$scope.pointparmid, $scope.readingForm).
+        success(function(data, status) {
+          console.log("yeah write parameterPointReadings!" + status);
+          // console.log(data);
+
+          $scope.parameter = data;
+        }).
+        error(function (data, status) {
+          $scope.data = data || "Request failed";
+        });
+
+      // $scope.projects.push($scope.form);
+      $scope.readingForm = {};
+
+    }
+
+
 };
 
 
@@ -388,10 +412,44 @@ function ExampleCtrl($scope, $http, $routeParams){
     error(function (data, status) {
       $scope.data = data || "Request failed";
     });
+}
+
+
+function ExamplePointCtrl($scope, $http, $routeParams){
+  console.log("ExampleCtrl");
+  var pointiid = $routeParams.pointiid;
+  var pointparmid = $routeParams.pointparmid;
+
+  // :pid/:pointiid/:pointparmid/:pointid
+
+  $scope.exampleData = [
+    {
+        "key": "History",
+        "values": []
+    }];
+
+  $http.get('/api/parameterPointReadings/'+pointiid+'/'+pointparmid).
+    success(function(data, status) {
+      // console.log("yeah read readings!");
+      $scope.exampleData = [
+        {
+            "key": "History",
+            "values": data
+        }];
+    }).
+    error(function (data, status) {
+      $scope.data = data || "Request failed";
+    });
+
+
+    
 
 
 
 }
+
+
+
 function BulletCtrl($scope) {
   $scope.bulletData = {
     "ranges": [1, 180, 300],

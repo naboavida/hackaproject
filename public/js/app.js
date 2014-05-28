@@ -52,6 +52,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         templateUrl: 'partials/parameterHistory',
         controller: ParameterCtrl
       }).
+      when('/parameterHistory/:pid/:pointiid/:pointparmid/:pointid', {
+        templateUrl: 'partials/parameterHistoryPoint',
+        controller: ParameterPointCtrl
+      }).
       when('/addParameter/:pid/:iid', {
         templateUrl: 'partials/addParameter',
         controller: ParameterCtrl

@@ -31,7 +31,8 @@ div
 		div.rightDiv
 			div(style='right:0;float:right;')
 				p Goals
-				p: a(href='/parameterHistory/{{pid}}/{{pointiid}}/{{pointparmid}}') History
+				//- /parameter/{{pid}}/{{pointiid}}/{{parameter.pointparmid}}/{{pointid}}
+				p: a(href='/parameterHistory/{{pid}}/{{pointiid}}/{{pointparmid}}/{{pointid}}') History
 			div.widgetChartLarge(ng-controller='BulletCtrl')
 				nvd3-bullet-chart(data='bulletDataRead', width='200', height='20', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
 			ul.list-item
@@ -53,6 +54,11 @@ div
 						div.line
 							div.line-item.value {{parameter.value/2}}
 							div.line-item.unit {{parameter.unit}}
+			div(ng-controller="ExamplePointCtrl")
+				h4 Add reading
+				p: input(placeholder='Value', type='number', ng-model='readingForm.value')
+				p: input(placeholder='Date (optional)', type='date', ng-model='readingForm.date')
+				p: button(ng-click='submitNewPointReading()') Add
 			//- div
 			//- 	h5 Parameter goals
 			//- 	p Title: {{parameter.title}}

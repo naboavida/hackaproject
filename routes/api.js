@@ -106,7 +106,7 @@ var pointDashboards = [ {"id": 0, "pointIndicators": [ {"pointid": 0, "coord":[{
                         {"id": 1, "pointIndicators":[] } ];
 
 var pointIndicators = [ {"pointiid":0, "parameters":[ {"pointparmid":0, "title":"ph", "value":3.3, "unit":"lvl", 
-                                                    "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3] ]  } ] } ];
+                                                    "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3], [7,3.3] ]  } ] } ];
 
 
 var nextIID = 3;
@@ -672,6 +672,7 @@ exports.addParameterPoint = function(req, res){
   console.log("pid: "+pid+" pointiid: "+pointiid+" pointid: "+pointid);
   // console.log(req.body);
   req.body.pointparmid = nextPointParmId;
+  req.body.readings = [];
   nextPointParmId++;
 
   var parameters = findIndicatorParametersByPointIId(pointiid);
@@ -779,6 +780,7 @@ exports.setActivities = function(req, res){
   res.json(req.body);
 }
 
+
 exports.getParameterReadings = function(req, res){
   console.log('API call: getParameterReadings');
   var pid = req.params.pid;
@@ -789,3 +791,59 @@ exports.getParameterReadings = function(req, res){
   console.log(parameter.readings);
   res.json(parameter.readings);
 }
+
+
+exports.getParameterPointReadings = function(req, res){
+  console.log('API call: getParameterPointReadings');
+  var pid = req.params.pid;
+  var pointiid = req.params.pointiid;
+  var pointparmid = req.params.pointparmid;
+
+  var parameter = findParameterByPointParmId(pointiid, pointparmid);
+  console.log(parameter.readings);
+  res.json(parameter.readings);
+}
+
+
+function ordergetBiggestXInReadings(readings_arr){
+  if(readings_arr != undefined && readings_arr != null && readings_arr.length != 0){
+    console.log("LAST READING IS "+readings_arr[readings_arr.length-1][0]);
+    return (readings_arr[readings_arr.length-1][0]+1);
+  } else {
+    return 0;
+  }
+  // readings_arr is something like [ [date/order, value] ]
+  
+}
+
+exports.addParameterPointReadings = function(req, res){
+  console.log('API call: addParameterPointReadings');
+  var pointiid = req.params.pointiid;
+  var pointparmid = req.params.pointparmid;
+
+  var readingToAdd = [];
+
+  console.log(pointiid + " " + pointparmid);
+
+  // get readings entry for pointiid and pointparmid
+  var parameter = findParameterByPointParmId(pointiid, pointparmid);
+  console.log(parameter);
+  var readings = parameter.readings;
+
+  
+  parameter.value = req.body.value;
+
+  // see if date was provided. if not, we need to find the last reading id, increment it and set to readingToAdd
+
+  var reading_id = ordergetBiggestXInReadings(parameter.readings);
+  console.log("reading_id : "+reading_id);
+
+  if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
+    readingToAdd = [ reading_id, req.body.value ]
+  }
+
+  // push readingToAdd to the readings array
+  readings.push(readingToAdd);
+
+  res.json(parameter);
+};

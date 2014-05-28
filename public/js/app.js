@@ -84,6 +84,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         templateUrl: 'partials/deletePost',
         controller: DeletePostCtrl
       }).
+      when('/addReading', {
+        templateUrl: 'partials/addReading',
+        controller: AddReadingCtrl
+      }).
       otherwise({
         redirectTo: '/'
       });

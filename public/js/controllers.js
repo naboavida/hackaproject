@@ -980,3 +980,8 @@ function CalendarCtrl($scope, $http, $routeParams){
 
   $scope.eventSources = [$scope.events, $scope.calEventsExt];
 }
+
+
+function AddReadingCtrl($scope, $http){
+  console.log("AddReadingCtrl");
+}

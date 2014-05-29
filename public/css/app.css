@@ -54,8 +54,10 @@ body{
 
 .item{
     float:left;
-    width:150px;
-    height:150px;
+    /*width:150px;
+    height:150px;*/
+    width:160px;
+    height:160px;
     list-style-type: none;
     background-color: white;
     border: 1px #bbb solid;
@@ -85,9 +87,30 @@ body{
   visibility: visible;
 }
 .big-item{
-    width: 330px;
-    height: 330px;
+    /*width: 330px;
+    height: 330px;*/
+    width: 350px;
+    height: 350px;
 }
+
+
+.itemBox{
+  background-color: white;
+  border: 1px #bbb solid;
+  text-align: center;
+  border-radius: 5px;
+}
+.itemBox h1, .itemBox h2, .itemBox h3, .itemBox h4, .itemBox h5, .itemBox h6{
+  border-bottom: 1px #bbb solid;
+}
+.itemBoxInner{
+  /*width: 200px;*/
+  margin-left:auto;
+  margin-right:auto;
+  padding:15px;
+}
+
+
 .semaphoreChart{
     margin-top: 40px;
     margin-left: auto;
@@ -214,15 +237,16 @@ header ul{
     margin: 25px;
 }
 .areaInfo{
-    height: 185px;
+    height: 115px;
+    margin-bottom: 25px;
 }
 
 
 
 .thumbnail{
-    width: 150px;
-    height: 150px;
-    border-radius: 5px;
+    width: 115px;
+    height: 115px;
+    border-radius: 2px;
 }
 
 
@@ -551,4 +575,20 @@ g .nv-tick text{
 
 .display-none{
   display:none;
+}
+
+
+.topCenteredButtons{
+  margin-left: auto;
+  margin-right: auto;
+  width: 150px;
+}
+
+.topCenteredButtons p{
+  float:left;
+  margin: 5px 15px;
+}
+
+.largeTopCenteredButtons{
+  width: 300px;
 }

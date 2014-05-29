@@ -1,4 +1,4 @@
-div
+div.wrap
 	ul.breadcrumb
 		li
 			a(href='/') Home
@@ -10,28 +10,29 @@ div
 			a(href='/indicator/{{pid}}/{{iid}}') Indicator
 		li
 			a(href='') Parameter
-	div.mainDiv
-		div.leftDiv
-			div.leftDivContent
-				div.areaInfo
-					div.leftInfoDiv
-						img.thumbnail(src='pics/saotome.jpg')
-					div.rightInfoDiv
-						div
-							h2(style='margin-left:25px;') São Tomé
-						div
-							div.leftBarDiv
-								h4 124.455 inhabitants
-							div.rightBarDiv
-								h4 100 km2
-				div#map(ng-controller="DemoController")
-					leaflet(center="madeira",width="450",height="400",markers="markers")
-		div.rightDiv
-			div(style='right:0;float:right;')
-				p Goals
-				p: a(href='/parameterHistory/{{pid}}/{{iid}}/{{parmid}}') History
-			div.widgetChartLarge(ng-controller='BulletCtrl')
-				nvd3-bullet-chart(data='bulletDataRead', width='200', height='20', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+div.mainDiv
+	div.leftDiv
+		div.leftDivContent
+			div.areaInfo
+				div.leftInfoDiv
+					img.thumbnail(src='pics/saotome.jpg')
+				div.rightInfoDiv
+					div
+						h2(style='margin-left:25px;') São Tomé
+					div
+						div.leftBarDiv
+							h4 124.455 inhabitants
+						div.rightBarDiv
+							h4 100 km2
+			div#map(ng-controller="DemoController")
+				leaflet(center="madeira",width="450",height="400",markers="markers")
+	div.rightDiv
+		div.topCenteredButtons
+			p Goals
+			p: a(href='/parameterHistory/{{pid}}/{{iid}}/{{parmid}}') History
+		div.widgetChartLarge(ng-controller='BulletCtrl',style='margin-top: 75px;')
+			nvd3-bullet-chart(data='bulletDataRead', width='200', height='20', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+		div(style='width:675px; margin-left:auto; margin-right:auto;margin-top:50px;')
 			ul.list-item
 				li.item
 					div.widgetContent

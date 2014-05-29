@@ -88,6 +88,14 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         templateUrl: 'partials/addReading',
         controller: AddReadingCtrl
       }).
+      when('/liveSensors/:pid/:pointid', {
+        templateUrl: 'partials/liveSensors',
+        controller: IndicatorPointCtrl
+      }).
+      when('/liveSensorsReadings/:pid/:pointid', {
+        templateUrl: 'partials/liveSensorsReadings',
+        controller: IndicatorPointCtrl
+      }).
       otherwise({
         redirectTo: '/'
       });

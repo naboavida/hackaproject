@@ -1,5 +1,5 @@
-div(style='width:400px;margin-left:auto;margin-right:auto;margin-top:100px;')
-	h1 Add a Project
+div.itemBox(style='width:400px;margin-left:auto;margin-right:auto;margin-top:100px;')
+	h1 Add Project
 	div(ng-controller="ProjectsCtrl")
 		div(ng-repeat='project in projects')
 			p {{project.title}} {{project.location}} {{project.area}}

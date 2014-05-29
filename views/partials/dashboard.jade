@@ -1,4 +1,4 @@
-div
+div.wrap
 	ul.breadcrumb
 		li
 			a(href='/') Home
@@ -6,56 +6,56 @@ div
 			a(href='/projects') Projects
 		li
 			a(href='') Dashboard {{project.location}}
-	div.mainDiv
-		div.leftDiv
-			div.leftDivContent
-				div.areaInfo
-					div.leftInfoDiv
-						img.thumbnail(src='pics/saotome.jpg')
-					div.rightInfoDiv
-						div
-							h2(style='margin-left:25px;') {{project.title}}
-						div
-							div.leftBarDiv
-								h4 {{project.location}}
-							div.rightBarDiv
-								h4 {{project.area}} km2
-				div(ng-controller="DemoController")
+div.mainDiv
+	div.leftDiv
+		div.leftDivContent
+			div.areaInfo
+				div.leftInfoDiv
+					img.thumbnail(src='pics/saotome.jpg')
+				div.rightInfoDiv
 					div
-						button(ng-click='addPoint()') Add Point
-						p {{addPointMode}}
-					div#map
-						leaflet(center="madeira",width="450",height="400",markers="markers")
-						//- leaflet(center="madeira",width="500",height="400",markers="markers",event-broadcast="events")
-		div.rightDiv
-			ul.list-item
-				li.item(ng-repeat='indicator in indicators')
+						h2(style='margin-left:25px;') {{project.title}}
+					div
+						div.leftBarDiv
+							h4 {{project.location}}
+						div.rightBarDiv
+							h4 {{project.area}} km2
+			div(ng-controller="DemoController")
+				div
+					button(ng-click='addPoint()') Add Point
+					p {{addPointMode}}
+				div#map
+					leaflet(center="madeira",width="450",height="400",markers="markers")
+					//- leaflet(center="madeira",width="500",height="400",markers="markers",event-broadcast="events")
+	div.rightDiv
+		ul.list-item
+			li.item(ng-repeat='indicator in indicators')
+				div.widgetContent
+					h3.widgetTitle {{indicator.title}}
+					div.line
+						div.line-item.value {{indicator.value}}
+						div.line-item.unit {{indicator.unit}}
+					div.widgetChart(ng-controller='BulletCtrl')
+						nvd3-bullet-chart(data='bulletData', width='100', height='10', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+					div.line
+						a(href='/indicator/{{pid}}/{{indicator.iid}}') Open
+					div.bottomRow
+						//- div(class='{{indicator.alarm}}')
+						div(class='{{indicator.alarm}}')
+							a.smallButton(href='project/readPost/{{post.id}}')
+								img(src='img/alarm.png')
+			li.item(ng-controller="CalendarCtrl")
+				div.widgetContent
+					h3.widgetTitle Next Activity
+					div.line
+						div.line-item.value {{nextActivity.day}}
+						div.line-item.unit {{nextActivity.month}} {{nextActivity.year}}
+					div.bottomRow(style='width:100%;')
+						div.line-item.unit {{nextActivity.title}}
+						img.line-item(src='pics/cal.png',style='width:50px;height:50px;')
+					div.line.bottomRow(style='width:100%;')
+						a(href='/calendar/{{pid}}') Open
+			li.item.item-to-add
+				a(href='/addWidget/{{pid}}')
 					div.widgetContent
-						h3.widgetTitle {{indicator.title}}
-						div.line
-							div.line-item.value {{indicator.value}}
-							div.line-item.unit {{indicator.unit}}
-						div.widgetChart(ng-controller='BulletCtrl')
-							nvd3-bullet-chart(data='bulletData', width='100', height='10', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
-						div.line
-							a(href='/indicator/{{pid}}/{{indicator.iid}}') Open
-						div.bottomRow
-							//- div(class='{{indicator.alarm}}')
-							div(class='{{indicator.alarm}}')
-								a.smallButton(href='project/readPost/{{post.id}}')
-									img(src='img/alarm.png')
-				li.item(ng-controller="CalendarCtrl")
-					div.widgetContent
-						h3.widgetTitle Next Activity
-						div.line
-							div.line-item.value {{nextActivity.day}}
-							div.line-item.unit {{nextActivity.month}} {{nextActivity.year}}
-						div.bottomRow(style='width:100%;')
-							div.line-item.unit {{nextActivity.title}}
-							img.line-item(src='pics/cal.png',style='width:50px;height:50px;')
-						div.line.bottomRow(style='width:100%;')
-							a(href='/calendar/{{pid}}') Open
-				li.item.item-to-add
-					a(href='/addWidget/{{pid}}')
-						div.widgetContent
-							h3.widgetTitle Add Widget
+						h3.widgetTitle Add Widget

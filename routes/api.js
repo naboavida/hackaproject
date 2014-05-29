@@ -77,8 +77,8 @@ exports.deletePost = function (req, res) {
 // DATA
 
 
-var projects = [{"id":0, "title":'Water Quality in São Tomé', "location": "São Tomé", "area":'123'},
-                {"id":1, "title":'Oilfields for Big Oil Company', "location":"Texas, USA", "area":'321'}];
+var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'},
+                {"id":1, "title":'Oilfields', "location":"Texas, USA", "area":'321'}];
 
 var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "alarm":'yes', "coord":[{"x":32.666667, "y": -16.85}], 
                                                     "readings":[]},

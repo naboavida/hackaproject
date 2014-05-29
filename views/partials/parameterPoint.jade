@@ -1,4 +1,4 @@
-div
+div.wrap
 	ul.breadcrumb
 		li
 			a(href='/') Home
@@ -12,29 +12,30 @@ div
 			a(href='/indicator/{{pid}}/{{pointiid}}/{{pointid}}') Indicator {{indicator.title}}
 		li
 			a(href='') Parameter {{parameter.title}}
-	div.mainDiv
-		div.leftDiv
-			div.leftDivContent
-				div.areaInfo
-					div.leftInfoDiv
-						img.thumbnail(src='pics/saotome.jpg')
-					div.rightInfoDiv
-						div
-							h2(style='margin-left:25px;') São Tomé
-						div
-							div.leftBarDiv
-								h4 124.455 inhabitants
-							div.rightBarDiv
-								h4 100 km2
-				div#map(ng-controller="DemoController")
-					leaflet(center="madeira",width="450",height="400",markers="markers")
-		div.rightDiv
-			div(style='right:0;float:right;')
-				p Goals
-				//- /parameter/{{pid}}/{{pointiid}}/{{parameter.pointparmid}}/{{pointid}}
-				p: a(href='/parameterHistory/{{pid}}/{{pointiid}}/{{pointparmid}}/{{pointid}}') History
-			div.widgetChartLarge(ng-controller='BulletCtrl')
-				nvd3-bullet-chart(data='bulletDataRead', width='200', height='20', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+div.mainDiv
+	div.leftDiv
+		div.leftDivContent
+			div.areaInfo
+				div.leftInfoDiv
+					img.thumbnail(src='pics/saotome.jpg')
+				div.rightInfoDiv
+					div
+						h2(style='margin-left:25px;') São Tomé
+					div
+						div.leftBarDiv
+							h4 124.455 inhabitants
+						div.rightBarDiv
+							h4 100 km2
+			div#map(ng-controller="DemoController")
+				leaflet(center="madeira",width="450",height="400",markers="markers")
+	div.rightDiv
+		div.topCenteredButtons
+			p Goals
+			//- /parameter/{{pid}}/{{pointiid}}/{{parameter.pointparmid}}/{{pointid}}
+			p: a(href='/parameterHistory/{{pid}}/{{pointiid}}/{{pointparmid}}/{{pointid}}') History
+		div.widgetChartLarge(ng-controller='BulletCtrl',style='margin-top: 75px;')
+			nvd3-bullet-chart(data='bulletDataRead', width='200', height='20', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+		div(style='width:675px; margin-left:auto; margin-right:auto;margin-top:50px;')
 			ul.list-item
 				li.item
 					div.widgetContent
@@ -54,17 +55,19 @@ div
 						div.line
 							div.line-item.value {{parameter.value/2}}
 							div.line-item.unit {{parameter.unit}}
-			div
-				div.leftDiv
+		div
+			div.leftDiv
+				div(style='margin-left:auto;margin-right:auto;width:150px;')
 					h4 Add single reading
 					p: input(placeholder='Paste values from Excel', type='number', ng-model='readingForm.value')
 					p: input(placeholder='Date (optional)', type='date', ng-model='readingForm.date')
 					p: button(ng-click='submitNewPointReading()') Add
-				div.rightDiv
+			div.rightDiv
+				div(style='margin-left:auto;margin-right:auto;width:412px;')
 					h4 Add multiple readings
 					p: textarea(placeholder='Values', ng-model='sentence',rows='10', cols='50')
 					p: button(ng-click='submitNewPointMultipleReadings()') Add
-			//- div
-			//- 	h5 Parameter goals
-			//- 	p Title: {{parameter.title}}
-			//- 	p Value: {{parameter.value}}
+		//- div
+		//- 	h5 Parameter goals
+		//- 	p Title: {{parameter.title}}
+		//- 	p Value: {{parameter.value}}

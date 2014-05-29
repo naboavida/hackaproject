@@ -1,4 +1,4 @@
-div
+div.wrap
 	ul.breadcrumb
 		li
 			a(href='/') Home
@@ -12,30 +12,29 @@ div
 			a(href='/indicator/{{pid}}/{{pointiid}}/{{pointid}}') Indicator {{indicator.title}}
 		li
 			a(href='') Parameter
-	div.mainDiv
-		div.leftDiv
-			div.leftDivContent
-				div.areaInfo
-					div.leftInfoDiv
-						img.thumbnail(src='pics/saotome.jpg')
-					div.rightInfoDiv
-						div
-							h2(style='margin-left:25px;') São Tomé
-						div
-							div.leftBarDiv
-								h4 124.455 inhabitants
-							div.rightBarDiv
-								h4 100 km2
-				div#map(ng-controller="DemoController")
-					leaflet(center="madeira",width="450",height="400",markers="markers")
-		div.rightDiv(ng-controller="ExamplePointCtrl")
-			div(style='right:0;float:right;')
-				p: a(href='/parameter/{{pid}}/{{pointiid}}/{{pointparmid}}/{{pointid}}') Goals
-				p History
-			div
-				h4 Parameter history
-				h4 Status: {{readStatus}}
-			//- 	p Title: {{parameter.title}}
-			//- 	p Value: {{parameter.value}}
-			div(style='width:600px; margin-left:auto; margin-right:auto;')
-				nvd3-line-chart(data="exampleData",ng-model="exampleData",width='600', height='300',showXAxis="true",showYAxis="true",tooltips="true",interactive="true")
+div.mainDiv
+	div.leftDiv
+		div.leftDivContent
+			div.areaInfo
+				div.leftInfoDiv
+					img.thumbnail(src='pics/saotome.jpg')
+				div.rightInfoDiv
+					div
+						h2(style='margin-left:25px;') São Tomé
+					div
+						div.leftBarDiv
+							h4 124.455 inhabitants
+						div.rightBarDiv
+							h4 100 km2
+			div#map(ng-controller="DemoController")
+				leaflet(center="madeira",width="450",height="400",markers="markers")
+	div.rightDiv(ng-controller="ExamplePointCtrl")
+		div.topCenteredButtons
+			p: a(href='/parameter/{{pid}}/{{pointiid}}/{{pointparmid}}/{{pointid}}') Goals
+			p History
+		div(style='margin-top: 75px;text-align:center;')
+			h4 Parameter history
+		//- 	p Title: {{parameter.title}}
+		//- 	p Value: {{parameter.value}}
+		div(style='width:600px; margin-left:auto; margin-right:auto;')
+			nvd3-line-chart(data="exampleData",ng-model="exampleData",width='600', height='300',showXAxis="true",showYAxis="true",tooltips="true",interactive="true")

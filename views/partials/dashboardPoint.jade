@@ -24,7 +24,7 @@ div.mainDiv
 						div.rightBarDiv
 							h4 {{project.area}} km2
 			div(ng-controller="DemoController")
-				div
+				div.overflow-hidden
 					button(ng-click='addPoint()') Add Point
 					p {{addPointMode}}
 				div#map

@@ -10,16 +10,66 @@ div.wrap
 			a(href='/indicator/{{pid}}/{{iid}}') Indicator
 		li
 			a(href='') Add Parameter...
-div(style='width:400px;margin-left:auto;margin-right:auto;margin-top:100px;')
-	h1 Add Parameter
-	div(ng-controller="ParameterCtrl")
-		li(ng-repeat='parameter in parameters')
-			p {{parameter.title}} {{parameter.value}}
-		//- form(action='/addProject', method='post')
-		div
-			p: input(placeholder='Title', name='title', ng-model='form.title')
-			p: input(placeholder='Value', name='value', ng-model='form.value')
-			p: input(placeholder='Unit', name='unit', ng-model='form.unit')
-			p: button(ng-click='submitNewParameter()') Add
-	p: a(href='/indicator/{{pid}}/{{iid}}') Back
-	p: a(href='/') Home
+div.mainDiv
+	div.leftDiv
+		div.leftDivContent
+			div.areaInfo
+				div.leftInfoDiv
+					img.thumbnail(src='pics/saotome.jpg')
+				div.rightInfoDiv
+					div
+						h2(style='margin-left:25px;') São Tomé
+					div
+						div.leftBarDiv
+							h4 124.455 inhabitants
+						div.rightBarDiv
+							h4 100 km2
+			div#map(ng-controller="DemoController")
+				leaflet(center="madeira",width="450",height="400",markers="markers")
+	div.rightDiv
+		ul.list-item
+			//- li.item.big-item
+			//- 	div.widgetContent
+			//- 		h3.widgetTitle {{indicator.title}}
+			//- 		div.line
+			//- 			div.line-item.value {{indicator.value}}
+			//- 			div.line-item.unit {{indicator.unit}}
+			//- 		div.semaphoreChart
+			//- 			svg(width="150px", height="60px")
+			//- 				path(d="M 1 1 L 149 1 L 149 59 L 1 59 L 1 1", 
+			//- 				    stroke="rgba(170, 170, 51, 0.5)", fill="#ee9", 
+			//- 				    stroke-width="1")
+			//- 				circle(style='stroke-width:5;stroke:rgba(55,55,55,0.25)', cx="40", cy="30", r="20", fill="grey")
+			//- 				circle(style='stroke-width:5;stroke:rgba(55,255,55,0.25)', cx="110", cy="30", r="20", fill="green")
+			li.item(ng-repeat='parameter in parameters')
+				div.widgetContent
+					h3.widgetTitle {{parameter.title}}
+					div.line
+						div.line-item.value {{parameter.value}}
+						div.line-item.unit {{parameter.unit}}
+					div.widgetChart(ng-controller='BulletCtrl')
+						nvd3-bullet-chart(data='bulletData', width='100', height='10', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
+					//- div.line
+					//- 	a(href='/parameter/{{pid}}/{{iid}}/{{parameter.parmid}}') Open
+		div(style='width:400px;margin-left:auto;margin-right:auto;margin-top:25px;')
+			//- h1 Add Parameter
+			//- div
+			//- 	//- li(ng-repeat='parameter in parameters')
+			//- 	//- 	p {{parameter.title}} {{parameter.value}}
+			//- 	//- form(action='/addProject', method='post')
+			//- 	div
+			//- 		p: input(placeholder='Title', name='title', ng-model='form.title')
+			//- 		p: input(placeholder='Value', name='value', ng-model='form.value')
+			//- 		p: input(placeholder='Unit', name='unit', ng-model='form.unit')
+			//- 		p: button(ng-click='submitNewParameter()') Add
+			//- p: a(href='/indicator/{{pid}}/{{iid}}') Back
+			//- p: a(href='/') Home
+			div(style='width:50%;margin-left:auto;margin-right:auto;')
+					div.itemBox
+						h4 Add Parameter
+						div.itemBoxInner
+							p: input(placeholder='Title', name='title', ng-model='form.title')
+							p: input(placeholder='Value', name='value', ng-model='form.value')
+							p: input(placeholder='Unit', name='unit', ng-model='form.unit')
+							p: button(ng-click='submitNewParameter()') Add
+						p: a(href='/indicator/{{pid}}/{{iid}}') Back

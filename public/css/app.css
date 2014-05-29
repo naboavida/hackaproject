@@ -54,10 +54,10 @@ body{
 
 .item{
     float:left;
-    /*width:150px;
-    height:150px;*/
-    width:160px;
-    height:160px;
+    width:150px;
+    height:150px;
+    /*width:160px;
+    height:160px;*/
     list-style-type: none;
     background-color: white;
     border: 1px #bbb solid;
@@ -87,20 +87,25 @@ body{
   visibility: visible;
 }
 .big-item{
-    /*width: 330px;
-    height: 330px;*/
-    width: 350px;
-    height: 350px;
+    width: 330px;
+    height: 330px;
+    /*width: 350px;
+    height: 350px;*/
 }
 
 
 .itemBox{
-  background-color: white;
+  /*background-color: white;
   border: 1px #bbb solid;
   text-align: center;
+  border-radius: 5px;*/
+  border: 1px #bbb solid;
   border-radius: 5px;
+  background-color: #f6f6f6;
+  background-color: white;
+  text-align:center;
 }
-.itemBox h1, .itemBox h2, .itemBox h3, .itemBox h4, .itemBox h5, .itemBox h6{
+.itemBox .itemBoxTitle{
   border-bottom: 1px #bbb solid;
 }
 .itemBoxInner{
@@ -141,7 +146,7 @@ body{
     /*display:inline-block;*/
     max-width: 1600px;
     margin: 0 auto;
-    margin-top: 25px;
+    /*margin-top: 25px;*/
 }
 
 
@@ -187,6 +192,7 @@ body{
 }
 .rightInfoDiv{
     float: left;
+    margin-left: 25px;
 }
 
 
@@ -235,10 +241,20 @@ header ul{
 
 .leftDivContent{
     margin: 25px;
+    margin-right: 12px;
 }
+
+.rightDivContent{
+   margin: 25px;
+   margin-left: 12px;
+}
+
 .areaInfo{
     height: 115px;
-    margin-bottom: 25px;
+    /*margin-bottom: 25px;
+    margin-top: 15px;
+    margin-left: 15px;*/
+    margin: 25px;
 }
 
 
@@ -246,7 +262,7 @@ header ul{
 .thumbnail{
     width: 115px;
     height: 115px;
-    border-radius: 2px;
+    /*border-radius: 2px;*/
 }
 
 
@@ -336,7 +352,8 @@ a:visited {text-decoration:none; color: #292E37;}
 }
 
 .angular-leaflet-map {
-    width: 640px;
+    /*width: 640px;*/
+    width: 100%;
     height: 480px;
 }
 
@@ -575,6 +592,10 @@ g .nv-tick text{
 
 .display-none{
   display:none;
+}
+
+.overflow-hidden{
+  visibility:hidden;
 }
 
 

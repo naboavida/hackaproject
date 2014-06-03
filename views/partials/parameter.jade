@@ -38,7 +38,7 @@ div.mainDiv
 					div.widgetContent
 						h3.widgetTitle Year 0
 						div.line
-							div.line-item.value {{parameter.value*2}}
+							div.line-item.value {{parameter.readings[0]}}
 							div.line-item.unit {{parameter.unit}}
 				li.item
 					div.widgetContent
@@ -50,7 +50,7 @@ div.mainDiv
 					div.widgetContent
 						h3.widgetTitle Objective
 						div.line
-							div.line-item.value {{parameter.value/2}}
+							div.line-item.value {{parameter.objective}}
 							div.line-item.unit {{parameter.unit}}
 			//- div
 			//- 	h4 Add reading

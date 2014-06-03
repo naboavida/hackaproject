@@ -75,45 +75,47 @@ exports.deletePost = function (req, res) {
 var pg = require('pg');
 // var dbUrl = "tcp://postgres:maxtamaxta@localhost/nunoteste";
 var conString = "postgres://postgres:maxtamaxta@localhost/nunoteste";
-var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
-var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
+// var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
+// var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
 
 
-var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'},
-                {"id":1, "title":'Oilfields', "location":"Texas, USA", "area":'321'}];
+// var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'},
+//                 {"id":1, "title":'Oilfields', "location":"Texas, USA", "area":'321'}];
 
 
 
-var client = new pg.Client(conString);
-client.connect(function(err) {
-  if(err) {
-    return console.error('could not connect to postgres', err);
-  }
-  client.query('SELECT * FROM tablea', function(err, result) {
-    if(err) {
-      return console.error('error running query', err);
-    }
-    console.log("Number of results: "+result.rows.length);
-    result.rows.forEach(function(row){
-      console.log(row);
-      projects.push({"id":row.id, "title":row.name, "location":"m", "area":"1"});
-    })
-    // console.log(result.rows[0].theTime);
-    //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
-    client.end();
-  });
-});
+
+
+// var client = new pg.Client(conString);
+// client.connect(function(err) {
+//   if(err) {
+//     return console.error('could not connect to postgres', err);
+//   }
+//   client.query('SELECT * FROM tablea', function(err, result) {
+//     if(err) {
+//       return console.error('error running query', err);
+//     }
+//     console.log("Number of results: "+result.rows.length);
+//     result.rows.forEach(function(row){
+//       console.log(row);
+//       projects.push({"id":row.id, "title":row.name, "location":"m", "area":"1"});
+//     })
+//     // console.log(result.rows[0].theTime);
+//     //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+//     client.end();
+//   });
+// });
 
 
 // DATA
 
-
+// var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'}];
+var projects = [];
 
 
 var dashboards = [{"id":0, "indicators":[{"iid":0, "title":"Water Quality", "value":"Good", "unit":'', "alarm":'yes', "coord":[{"x":32.666667, "y": -16.85}], 
                                                     "readings":[]},
-                                        {"iid":2, "title":"Location", "value":"Monte", "unit":'', "alarm":'no', "coord":[{"x":32.666667, "y": -16.95}]}] }, 
-                  {"id":1, "indicators":[{"iid":1, "title":"Budget", "value":4, "unit":"Eur", "alarm":'no'}] }];
+                                        {"iid":2, "title":"Location", "value":"Monte", "unit":'', "alarm":'no', "coord":[{"x":32.666667, "y": -16.95}]}] }];
 
 var indicators = [ {"iid":0, "parameters":[{"parmid":0, "title":"ph", "value":7.3, "unit":"", 
                                                     "readings":[[0, 3.4], [1,3.5], [2,4.2], [3,4.4], [4,4.5], [5,5.9], [6,7.3] ]  }] }, 
@@ -505,31 +507,91 @@ function ordergetBiggestXInReadings(readings_arr){
 // METHODS:
 // METHODS:
 // METHODS:
+// METHODS:
+// METHODS:
+// METHODS:
+// METHODS:
+// METHODS:
+// METHODS:
+// METHODS:
+// METHODS:
+// METHODS:
 // ************************************************************************************************************************************
 
 
 
 // get
 exports.getProjects = function(req, res){
-  res.json(projects);
+  // var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'}];
+  var projects = [];
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query('SELECT * FROM projects', function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        projects.push({"id":row.pid, "title":row.title, "location":row.location, "area":row.area});
+        dashboards.push({"id":row.pid, "indicators":[] });
+      })
+      res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+  // res.json(projects);
 };
 
 // post
 exports.addProject = function(req, res){
   console.log('API call: addProject');
-  req.body.id = findMaxProjectId()+1;
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "INSERT INTO projects(title, area, location) VALUES ('"+req.body.title+"', '"+req.body.area+"', '"+req.body.location+"') RETURNING pid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        req.body.id = row.pid;
+        projects.push(req.body);
+        dashboards.push({"id":req.body.id, "indicators":[] });
+
+        pointDashboards.push({"id": req.body.id, "pointIndicators":[] });
+        res.json(projects);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+
+
+  // req.body.id = findMaxProjectId()+1;
   // console.log(req.body);
   // projects.push({title:'New York', area:'231'});
-  projects.push(req.body);
-
-  dashboards.push({"id":req.body.id, "indicators":[] });
-  // console.log(dashboards);
-
-  pointDashboards.push({"id": req.body.id, "pointIndicators":[] });
   
 
-  // res.json(req.body);
-  res.json(projects);
+  
+  // console.log(dashboards);
+
+  
 };
 
 
@@ -539,14 +601,45 @@ exports.getDashboard = function(req, res){
   var project = findProjectById(pid);
   // console.log('title is: '+title);
 
-  var indicators = findDashboardIndicatorsById(pid);
+  // var indicators = findDashboardIndicatorsById(pid);
+  var indicators =  [];
   // console.log(indicators);
-
   var result = {};
-  result.project = project;
-  result.indicators = indicators;
 
-  res.json(result);
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point IS NULL;";
+    // NA QUERY TB QUEREMOS EVITAR OS QUE TÊM POINTID!
+
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        indicators.push(row);
+
+        
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      result.project = project;
+      result.indicators = indicators;
+
+      res.json(result);
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+
+  
+  
 };
 
 
@@ -557,14 +650,50 @@ exports.getDashboardPoint = function(req, res){
   var pointid = req.params.pointid;
   console.log(pid + " " + pointid);
 
-  var project = findProjectById(pid);
-  var indicators = findPointIndicatorsById(pid, pointid);
-
+  var indicators = [];
   var result = {};
-  result.project = project;
-  result.indicators = indicators;
-  console.log(indicators);
-  res.json(result);
+
+  // DEPOIS É PARA FILTRAR NA QUERY POR POINTID TAMBEM!
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point = "+pointid+";";
+    // NA QUERY TB QUEREMOS EVITAR OS QUE TÊM POINTID!
+
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        indicators.push(row);
+
+      })
+      // result.project = project;
+      result.indicators = indicators;
+
+      res.json(result);
+
+      client.end();
+    });
+  });
+
+
+
+
+
+
+  // var project = findProjectById(pid);
+  // var indicators = findPointIndicatorsById(pid, pointid);
+
+  
+  // result.project = project;
+  // result.indicators = indicators;
+  // console.log(indicators);
+  // res.json(result);
 };
 
 
@@ -573,28 +702,117 @@ exports.getIndicator = function(req, res){
   var iid = req.params.iid;
   var result = {};
 
-  var indicator = findIndicatorById(iid);
-  var parameters = findIndicatorParametersByIId(iid);
+  // var indicator = findIndicatorById(iid);
+  var indicator = [];
+  // var parameters = findIndicatorParametersByIId(iid);
+  var parameters = [];
 
-  result.indicator = indicator;
-  result.parameters = parameters;
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "SELECT * FROM indicators WHERE iid = "+iid+";";
+    client.query(q, function(err, res1) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results getIndicator1: "+res1.rows.length);
+      res1.rows.forEach(function(row){
+        console.log(row);
+        result.indicator = row;
 
-  res.json(result);
+        var q2 = "SELECT * FROM parameters WHERE iid_ind = "+iid+";";
+        console.log("QUERY 2 IS: "+q2);
+        client.query(q2, function(err, res2) {
+          if(err) {
+            return console.error('could not connect to postgres', err);
+          }
+          console.log("Is rows2? "+res2.rows);
+          console.log("Number of results getIndicator2: "+res2.rows.length);
+          res2.rows.forEach(function(row){
+            parameters.push(row);
+          });
+          result.parameters = parameters;
+          res.json(result);
+          client.end();
+        });
+
+        
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      // client.end();
+    });
+  });
+
+  
 };
 
 exports.getPointIndicator = function(req, res){
   console.log('API call: getPointIndicator');
-  var pointiid = req.params.pointiid;
+  var iid = req.params.pointiid;
   var pointid = req.params.pointid;
   var result = {};
 
-  var indicator = findIndicatorByPointiid(pointiid);
-  var parameters = findIndicatorParametersByPointIId(pointiid);
 
-  result.indicator = indicator;
-  result.parameters = parameters;
+  var indicator = [];
+  // var parameters = findIndicatorParametersByIId(iid);
+  var parameters = [];
 
-  res.json(result);
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "SELECT * FROM indicators WHERE iid = "+iid+";";
+    client.query(q, function(err, res1) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results getIndicator1: "+res1.rows.length);
+      res1.rows.forEach(function(row){
+        console.log(row);
+        result.indicator = row;
+
+        var q2 = "SELECT * FROM parameters WHERE iid_ind = "+iid+";";
+        console.log("QUERY 2 IS: "+q2);
+        client.query(q2, function(err, res2) {
+          if(err) {
+            return console.error('could not connect to postgres', err);
+          }
+          console.log("Is rows2? "+res2.rows);
+          console.log("Number of results getIndicator2: "+res2.rows.length);
+          res2.rows.forEach(function(row){
+            parameters.push(row);
+          });
+          result.parameters = parameters;
+          res.json(result);
+          client.end();
+        });
+
+        
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      // client.end();
+    });
+  });
+
+
+
+
+  // var indicator = findIndicatorByPointiid(pointiid);
+  // var parameters = findIndicatorParametersByPointIId(pointiid);
+
+  // result.indicator = indicator;
+  // result.parameters = parameters;
+
+  // res.json(result);
 };
 
 exports.addIndicator = function(req, res){
@@ -603,18 +821,74 @@ exports.addIndicator = function(req, res){
 
   var pid = req.params.pid;
 
-  req.body.iid = nextIID;
-  nextIID++;
-
   var indicatorsResult = findDashboardIndicatorsById(pid);
-  indicatorsResult.push(req.body);
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "INSERT INTO indicators(title, unit, alarm, value, readings, pid_proj) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", ARRAY["+req.body.value+"], "+pid+") RETURNING iid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        req.body.iid = row.iid;
+        indicatorsResult.push(req.body);
+        indicators.push( {"iid":req.body.iid, "parameters":[]} );
+        res.json(indicatorsResult);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+  
+
+  // req.body.iid = nextIID;
+  // nextIID++;
+
+  // var client = new pg.Client(conString);
+  // client.connect(function(err) {
+  //   if(err) {
+  //     return console.error('could not connect to postgres', err);
+  //   }
+  //   var q = "SELECT iid FROM indicators WHERE ";
+  //   client.query(q, function(err, result) {
+  //     if(err) {
+  //       return console.error('error running query', err);
+  //     }
+  //     console.log("Number of results: "+result.rows.length);
+  //     result.rows.forEach(function(row){
+  //       console.log(row);
+  //       req.body.iid = row;
+  //       indicatorsResult.push(req.body);
+  //       indicators.push( {"iid":req.body.iid, "parameters":[]} );
+  //       // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+  //     })
+  //     // res.json(projects);
+  //     // console.log(result.rows[0].theTime);
+  //     //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+  //     client.end();
+  //   });
+  // });
+
+  
+  
+
 
   // init parameters for iid
-  indicators.push( {"iid":req.body.iid, "parameters":[]} );
+  
   // console.log(indicators);
 
 
-  res.json(indicatorsResult);
+  
 };
 
 
@@ -625,34 +899,65 @@ exports.addPointIndicator = function(req, res){
   var pid = req.params.pid;
   var pointid = req.params.pointid;
 
-  req.body.pointiid = nextPointIID;
-  nextPointIID++;
-
   var indicatorsResult = findPointIndicatorsById(pid, pointid);
-  console.log(indicatorsResult);
-  indicatorsResult.push(req.body);
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "INSERT INTO indicators(title, unit, alarm, value, readings, pid_proj, pointid_point) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", ARRAY["+req.body.value+"], "+pid+", "+pointid+") RETURNING iid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        req.body.iid = row.iid;
+        indicatorsResult.push(req.body);
+        // indicators.push( {"iid":req.body.iid, "parameters":[]} );
+        pointIndicators.push({"pointiid":req.body.iid, "parameters":[] });
+        res.json(indicatorsResult);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+
+
+  // req.body.pointiid = nextPointIID;
+  // nextPointIID++;
+
+  
+  // console.log(indicatorsResult);
+  // indicatorsResult.push(req.body);
 
   // // dps falta criar a entrada vazia no pointIndicators por causa dos parametros
   // indicators.push( {"iid":req.body.iid, "parameters":[]} );
-  pointIndicators.push({"pointiid":req.body.pointiid, "parameters":[] });
+  // pointIndicators.push({"pointiid":req.body.pointiid, "parameters":[] });
   
 
-  console.log(req.body);
+  // console.log(req.body);
 
-  res.json(indicatorsResult);
+  // res.json(indicatorsResult);
 };
 
 
-exports.addDashboardWidget = function(req, res){
-  console.log('API call: addDashboardWidget');
-  var pid = req.params.pid;
+// exports.addDashboardWidget = function(req, res){
+//   console.log('API call: addDashboardWidget');
+//   var pid = req.params.pid;
 
-  console.log(req.body);
-  // projects.push({title:'New York', area:'231'});
-  projects.push(req.body);
-  // res.json(req.body);
-  res.json(projects);
-};
+//   console.log(req.body);
+//   // projects.push({title:'New York', area:'231'});
+//   projects.push(req.body);
+//   // res.json(req.body);
+//   res.json(projects);
+// };
 
 exports.getParameter = function(req, res){
   console.log('API call: getParameter');
@@ -660,11 +965,37 @@ exports.getParameter = function(req, res){
   var parmid = req.params.parmid;
   var result = {};
 
-  var parameter = findParameterByParmId(iid, parmid);
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "SELECT * FROM parameters WHERE parmid = "+parmid+";";
+    client.query(q, function(err, res1) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results for getParameter: "+res1.rows.length);
+      res1.rows.forEach(function(row){
+        console.log(row);
+        result = row;
+        // res.json(result);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
 
-  result = parameter;
+      res.json(result);
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
 
-  res.json(result);
+  // var parameter = findParameterByParmId(iid, parmid);
+
+  // result = parameter;
+
+  // res.json(result);
 };
 
 
@@ -672,15 +1003,46 @@ exports.getParameter = function(req, res){
 
 exports.getParameterPoint = function(req, res){
   console.log('API call: getParameterPoint');
-  var pointiid = req.params.pointiid;
-  var pointparmid = req.params.pointparmid;
+  var iid = req.params.pointiid;
+  var parmid = req.params.pointparmid;
   var result = {};
 
-  var parameter = findParameterByPointParmId(pointiid, pointparmid);
 
-  result = parameter;
 
-  res.json(result);
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "SELECT * FROM parameters WHERE parmid = "+parmid+";";
+    client.query(q, function(err, res1) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results for getParameter: "+res1.rows.length);
+      res1.rows.forEach(function(row){
+        console.log(row);
+        result = row;
+        // res.json(result);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+
+      res.json(result);
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+
+
+
+  // var parameter = findParameterByPointParmId(pointiid, pointparmid);
+
+  // result = parameter;
+
+  // res.json(result);
 };
 
 
@@ -691,17 +1053,44 @@ exports.addParameter = function(req, res){
   var iid = req.params.iid;
   console.log("pid: "+pid+" iid: "+iid);
   // console.log(req.body);
-  req.body.parmid = nextParmId;
-  nextParmId++;
-  req.body.readings = [];
+  // req.body.parmid = nextParmId;
+  // nextParmId++;
+  // req.body.readings = [];
 
   var parameters = findIndicatorParametersByIId(iid);
   
-  console.log("Pushing parm into parms");
+  // console.log("Pushing parm into parms");
   // console.log(parameters);
-  parameters.push(req.body);
+  // parameters.push(req.body);
 
-  // console.log(parameters);
+  console.log('req.body addParameter');
+  console.log(req.body);
+
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "INSERT INTO parameters(title, unit, alarm, value, objective, min, max, readings, iid_ind) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", "+req.body.objective+", "+req.body.min+", "+req.body.max+", ARRAY["+req.body.value+"], "+iid+") RETURNING parmid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        req.body.parmid = row.parmid;
+        parameters.push(req.body);
+        res.json(parameters);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
 
 
   // console.log("Dashboards");
@@ -709,7 +1098,7 @@ exports.addParameter = function(req, res){
   // console.log("Indicators");
   // console.log(indicators);
 
-  res.json(parameters);
+  // res.json(parameters);
 };
 
 exports.addParameterPoint = function(req, res){
@@ -739,10 +1128,35 @@ exports.geoapi = function(req, res){
   console.log('API call: geoapi');
   var pid = req.params.pid;
   // console.log(pid);
-  var loc = getLocationsByPId(pid);
-  console.log("loc");
-  console.log(loc);
-  res.json(loc);
+  // var loc = getLocationsByPId(pid);
+  var loc = [];
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query('SELECT * FROM points WHERE pid_proj = '+pid, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        loc.push(row);
+      })
+      console.log("loc");
+      console.log(loc);
+      res.json(loc);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+  // console.log("loc");
+  // console.log(loc);
+  // res.json(loc);
 };
 
 
@@ -751,9 +1165,36 @@ exports.geoapiPoint = function(req, res){
   var pid = req.params.pid;
   var pointid = req.params.pointid;
   // console.log(pid);
-  var loc = getLocationsByPIdPointid(pid, pointid);
-  // console.log(loc);
-  res.json(loc);
+
+  var loc = [];
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query('SELECT * FROM points WHERE pid_proj = '+pid+' and pointid = '+pointid, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        loc.push(row);
+      })
+      console.log("loc");
+      console.log(loc);
+      res.json(loc);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+
+  // var loc = getLocationsByPIdPointid(pid, pointid);
+  // // console.log(loc);
+  // res.json(loc);
 };
 
 exports.geoapiAddPoint = function(req, res){
@@ -763,24 +1204,68 @@ exports.geoapiAddPoint = function(req, res){
 
   var pointIndicator = getPointIndicatorById(pid);
 
-  var currPointid = nextPointID;
-  nextPointID++;
-  var pointToAdd = { "pointid": currPointid, "coord":[{"x":req.body.lat, "y":req.body.lng}], "indicators":[]};
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "INSERT INTO points(x, y, location, picturename, pid_proj) VALUES ("+req.body.lat+", "+req.body.lng+", 'EMPTY_LOC', 'EMPTY_JPG', '"+pid+"') RETURNING pointid;";
+    console.log("Q is: "+q);
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      var pointToAdd = {};
+      result.rows.forEach(function(row){
 
-  pointIndicator.push(pointToAdd);
+        pointToAdd = { "pointid": row.pointid, "coord":[{"x":req.body.lat, "y":req.body.lng}], "indicators":[]};
 
-  // {"pointid": 1, "coord":[{"x":32.666667, "y": -16.95}],
-  //                                                               "indicators":[] }
 
-  // obter proximo pointid
-  // adicionar ao pointToAdd bem como os restantes x, y
-  // adicionar o pointToAdd ao pointIndicator
-  console.log(pointIndicator);
+        pointIndicator.push(pointToAdd);
 
-  console.log("add geo point");
-  console.log(pointDashboards);
 
-  res.json(pointToAdd);
+        // console.log(row);
+        // req.body.id = row.pid;
+        // projects.push(req.body);
+        // dashboards.push({"id":req.body.id, "indicators":[] });
+
+        // pointDashboards.push({"id": req.body.id, "pointIndicators":[] });
+        // res.json(projects);
+        // // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      });
+      res.json(pointToAdd);
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+
+
+
+
+  
+
+  // var currPointid = nextPointID;
+  // nextPointID++;
+  // var pointToAdd = { "pointid": currPointid, "coord":[{"x":req.body.lat, "y":req.body.lng}], "indicators":[]};
+
+  // pointIndicator.push(pointToAdd);
+
+  // // {"pointid": 1, "coord":[{"x":32.666667, "y": -16.95}],
+  // //                                                               "indicators":[] }
+
+  // // obter proximo pointid
+  // // adicionar ao pointToAdd bem como os restantes x, y
+  // // adicionar o pointToAdd ao pointIndicator
+  // console.log(pointIndicator);
+
+  // console.log("add geo point");
+  // console.log(pointDashboards);
+
+  // res.json(pointToAdd);
 };
 
 

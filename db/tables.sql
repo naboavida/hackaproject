@@ -1,25 +1,127 @@
 
+-- tables for demo data
 
 
-CREATE TABLE public.tablea
+-- Table: projects
+
+
+
+
+
+DROP TABLE parameters;
+DROP TABLE indicators;
+DROP TABLE points;
+DROP TABLE projects;
+
+
+
+CREATE TABLE projects
 (
-   id integer, 
-   name text, 
-   CONSTRAINT "PK" PRIMARY KEY (id)
-) 
-WITH (
-  OIDS = FALSE
+  pid serial NOT NULL,
+  title character varying(20) NOT NULL,
+  area double precision,
+  location character varying,
+  CONSTRAINT pid PRIMARY KEY (pid)
 )
-;
-ALTER TABLE public.tablea
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE projects
   OWNER TO postgres;
 
 
 
-INSERT INTO tablea(
-            id, name)
-    VALUES (0, 'Jacaré');
 
-INSERT INTO tablea(
-            id, name)
-    VALUES (1, 'Javali');
+CREATE TABLE points
+(
+  pointid serial NOT NULL,
+  x double precision NOT NULL,
+  y double precision NOT NULL,
+  location character varying(30),
+  picturename character varying(40),
+  pid_proj integer NOT NULL,
+  CONSTRAINT points_pkey PRIMARY KEY (pointid),
+  CONSTRAINT points_pid_proj_fkey FOREIGN KEY (pid_proj)
+      REFERENCES projects (pid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE points
+  OWNER TO postgres;
+
+
+
+
+-- CREATE TABLE indicators
+-- (
+--   iid serial NOT NULL,
+--   title character varying(20) NOT NULL,
+--   unit character varying(12),
+--   alarm character varying(12),
+--   value character varying(12),
+--   readings character varying(12)[],
+--   pid_proj integer NOT NULL,
+--   CONSTRAINT indicators_pkey PRIMARY KEY (iid),
+--   CONSTRAINT indicators_pid_proj_fkey FOREIGN KEY (pid_proj)
+--       REFERENCES projects (pid) MATCH SIMPLE
+--       ON UPDATE NO ACTION ON DELETE CASCADE
+-- )
+-- WITH (
+--   OIDS=FALSE
+-- );
+-- ALTER TABLE indicators
+--   OWNER TO postgres;
+
+CREATE TABLE indicators
+(
+  iid serial NOT NULL,
+  title character varying(20) NOT NULL,
+  unit character varying(12),
+  alarm character varying(12),
+  value character varying(12),
+  readings character varying(12)[],
+  pid_proj integer NOT NULL,
+  pointid_point integer,
+  CONSTRAINT indicators_pkey PRIMARY KEY (iid),
+  CONSTRAINT indicators_pid_proj_fkey FOREIGN KEY (pid_proj)
+      REFERENCES projects (pid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT indicators_pointid_point_fkey FOREIGN KEY (pointid_point)
+      REFERENCES points (pointid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE indicators
+  OWNER TO postgres;
+
+
+
+
+CREATE TABLE parameters
+(
+  parmid serial NOT NULL,
+  title character varying(20) NOT NULL,
+  value character varying(12),
+  unit character varying(12),
+  alarm character varying(12),
+  objective character varying(12),
+  min character varying(12),
+  max character varying(12),
+  readings character varying(12)[],
+  iid_ind integer NOT NULL,
+  CONSTRAINT parameters_pkey PRIMARY KEY (parmid),
+  CONSTRAINT parameters_iid_ind_fkey FOREIGN KEY (iid_ind)
+      REFERENCES indicators (iid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE parameters
+  OWNER TO postgres;
+
+

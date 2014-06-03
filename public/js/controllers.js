@@ -171,6 +171,7 @@ function DashboardPointCtrl($scope, $http, $routeParams){
       console.log(data);
       $scope.project = data.project;
       $scope.indicators = data.indicators;
+      console.log('SDASDDS $scope.indicators');
       console.log($scope.indicators);
     }).
     error(function (data, status) {
@@ -1119,7 +1120,7 @@ function Hello($scope, $http, $timeout) {
     $scope.getData();
     $scope.getTempData();
     // uncomment below to keep updating
-    $scope.intervalFunction();
+    // $scope.intervalFunction();
 }
 
 

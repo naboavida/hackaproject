@@ -71,5 +71,9 @@ div.mainDiv
 							p: input(placeholder='Title', name='title', ng-model='form.title')
 							p: input(placeholder='Value', name='value', ng-model='form.value')
 							p: input(placeholder='Unit', name='unit', ng-model='form.unit')
+							p: input(placeholder='Objective', name='objective', ng-model='form.objective')
+							p: input(placeholder='Minimum Value', name='min', ng-model='form.min')
+							p: input(placeholder='Maximum Value', name='max', ng-model='form.max')
+							p: input(placeholder='Alarm', name='alarm', ng-model='form.alarm')
 							p: button(ng-click='submitNewParameter()') Add
 						p: a(href='/indicator/{{pid}}/{{iid}}') Back

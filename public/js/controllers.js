@@ -397,7 +397,7 @@ function ParameterPointCtrl($scope, $http, $routeParams){
           console.log("yeah write parameterPointReadings!" + status);
           // console.log(data);
 
-          $scope.parameter = data;
+          $scope.parameter.value = data.value;
         }).
         error(function (data, status) {
           $scope.data = data || "Request failed";
@@ -421,9 +421,9 @@ function ParameterPointCtrl($scope, $http, $routeParams){
       $http.post('/api/parameterPointMultipleReadings/'+$scope.pointiid+'/'+$scope.pointparmid, lines).
         success(function(data, status) {
           console.log("yeah write parameterPointMultipleReadings!" + status);
-          // console.log(data);
+          console.log(data);
 
-          $scope.parameter = data;
+          $scope.parameter.value = data.value;
         }).
         error(function (data, status) {
           $scope.data = data || "Request failed";
@@ -786,13 +786,18 @@ function CalendarCtrl($scope, $http, $routeParams){
   console.log("CalendarCtrl!!!");
   $scope.pid = $routeParams.pid;
 
+  $scope.pointid = $routeParams.pointid;
+
   $scope.nextActivity = {};
 
   $scope.addForm = 'display-none';
   $scope.viewForm = 'display-none';
-  
 
-  $http.get('/api/activities/'+$scope.pid).
+  var getQuery = '/api/activities/'+$scope.pid;
+  if($scope.pointid != undefined || $scope.pointid != null)
+    getQuery += '/'+$scope.pointid;
+
+  $http.get(getQuery).
     success(function(data) {
       // console.log("data is ");
       // console.log(data);
@@ -867,7 +872,12 @@ function CalendarCtrl($scope, $http, $routeParams){
     console.log(elem);
     // console.log(dateDropped.getDate());
     var togo = {'aid':elem.aid, 'title':elem.title, 'start':elem.start, 'end':elem.end, 'allDay':elem.allDay};
-    $http.post('/api/activities/'+$scope.pid, togo).
+
+    var postQuery = '/api/activities/'+$scope.pid;
+    if($scope.pointid != undefined || $scope.pointid != null)
+      postQuery += '/'+$scope.pointid;
+
+    $http.post(postQuery, togo).
       success(function(data) {
         // console.log("yeah postNextActivity!");
         // $location.path('/projects');

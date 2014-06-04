@@ -64,6 +64,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         templateUrl: 'partials/addParameterPoint',
         controller: ParameterPointCtrl
       }).
+      when('/calendar/:pid/:pointid', {
+        templateUrl: 'partials/calendarPoint',
+        controller: CalendarCtrl
+      }).
       when('/calendar/:pid', {
         templateUrl: 'partials/calendar',
         controller: CalendarCtrl

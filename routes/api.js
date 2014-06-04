@@ -76,7 +76,7 @@ var pg = require('pg');
 // var dbUrl = "tcp://postgres:maxtamaxta@localhost/nunoteste";
 var conString = "postgres://postgres:maxtamaxta@localhost/nunoteste";
 // var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
-var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
+// var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
 
 
 // var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'},
@@ -1105,21 +1105,52 @@ exports.addParameterPoint = function(req, res){
   console.log('API call: addParameterPoint');
   var result = {};
   var pid = req.params.pid;
-  var pointiid = req.params.pointiid;
+  var iid = req.params.pointiid;
   var pointid = req.params.pointid;
-  console.log("pid: "+pid+" pointiid: "+pointiid+" pointid: "+pointid);
+  console.log("pid: "+pid+" iid: "+iid+" pointid: "+pointid);
   // console.log(req.body);
-  req.body.pointparmid = nextPointParmId;
-  req.body.readings = [];
-  nextPointParmId++;
 
-  var parameters = findIndicatorParametersByPointIId(pointiid);
+  // req.body.pointparmid = nextPointParmId;
+  // req.body.readings = [];
+  // nextPointParmId++;
+
+  var parameters = findIndicatorParametersByPointIId(iid);
+
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "INSERT INTO parameters(title, unit, alarm, value, objective, min, max, readings, iid_ind) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", "+req.body.objective+", "+req.body.min+", "+req.body.max+", ARRAY["+req.body.value+"], "+iid+") RETURNING parmid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results addParameterPoint: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        req.body.parmid = row.parmid;
+        parameters.push(req.body);
+        res.json(parameters);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+
+
   
-  console.log("Pushing parm into parms");
+  
+  // console.log("Pushing parm into parms");
   // console.log(parameters);
-  parameters.push(req.body);
+  // parameters.push(req.body);
 
-  res.json(parameters);
+  // res.json(parameters);
 };
 
 
@@ -1274,20 +1305,71 @@ exports.geoapiAddPoint = function(req, res){
 exports.getActivities = function(req, res){
   console.log('API call: getActivities');
   var pid = req.params.pid;
+  var activities_arr = [];
 
-  // obter todos os indicadores de um projecto
-  var activities_arr = findProjectActivitiesById(pid);
-  // console.log(activities_arr);
-  // para cada indicador, obter as tarefas
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query('SELECT * FROM activities WHERE pid_proj = '+pid+' AND pointid_point IS NULL', function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        activities_arr.push(row);
+      })
+      res.json(activities_arr);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+
+  // // obter todos os indicadores de um projecto
+  // var activities_arr = findProjectActivitiesById(pid);
+  // // console.log(activities_arr);
+  // // para cada indicador, obter as tarefas
 
   
-  // var activitiesList
-  // for(var activitiesList in activities){
-  //   console.log(activitiesList);
-  // }
+  // // var activitiesList
+  // // for(var activitiesList in activities){
+  // //   console.log(activitiesList);
+  // // }
   
-  // incluir as tarefas na variavel de resultado
-  res.json(activities_arr);
+  // // incluir as tarefas na variavel de resultado
+  // res.json(activities_arr);
+}
+
+exports.getActivitiesPoint = function(req, res){
+  console.log('API call: getActivitiesPoint');
+  var pid = req.params.pid;
+  var pointid = req.params.pointid;
+  var activities_arr = [];
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query('SELECT * FROM activities WHERE pid_proj = '+pid+' AND pointid_point = '+pointid, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        activities_arr.push(row);
+      })
+      res.json(activities_arr);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
 }
 
 
@@ -1297,34 +1379,147 @@ exports.setActivities = function(req, res){
   console.log(req.body);
   var pid = req.params.pid;
 
+  var querySQL = '';
+
   console.log(req.body.aid != null);
   if(req.body.aid != undefined && req.body.aid != null){
     if( typeof(req.body) == 'object' ){
       var aid = req.body.aid;
       console.log("setActivityByPid");
 
-      setActivityByPid(pid, req.body);
-      // see if we have the aid on activities    
-      //else add the req.body to the pid on activities
+      querySQL = "UPDATE activities SET start = '"+req.body.start+"'::timestamptz WHERE aid = "+aid+";";
+      // setActivityByPid(pid, req.body);
+      // // see if we have the aid on activities    
+      // //else add the req.body to the pid on activities
     }
   } else {
-    // were adding a new one because it has no aid (activity id)
-    addActivityByPid(pid, req.body);
+    // // were adding a new one because it has no aid (activity id)
+    // addActivityByPid(pid, req.body);
+    // INSERT INTO activities(title, description, responsible, start, allday, pid_proj) VALUES ('Budget Revision', 'The monthly task to revise the operational expenses and profits.', 'João Santos', '2014-06-20 00:00:00.000000', true, 1);
+    // querySQL = "INSERT INTO activities(title, description, responsible, start, allday, pid_proj) VALUES ("+req.body.title+", "+req.body.title+") RETURNING aid";
+    querySQL = "INSERT INTO activities(title, responsible, start, allday, pid_proj) VALUES ('"+req.body.title+"', '"+req.body.responsible+"', '"+req.body.start+"'::timestamptz, "+req.body.allDay+", "+pid+") RETURNING aid;";
+    // console.log('querySQL');
+    // console.log(querySQL);
   }
 
-  res.json(req.body);
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query(querySQL, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        req.body.aid = row.aid;
+      })
+      res.json(req.body);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+  
 }
 
 
+exports.setActivitiesPoint = function(req, res){
+  console.log('API call: setActivitiesPoint');
+  var today = new Date();
+  console.log(req.body);
+  var pid = req.params.pid;
+  var pointid = req.params.pointid;
+
+  var querySQL = '';
+
+  console.log(req.body.aid != null);
+  if(req.body.aid != undefined && req.body.aid != null){
+    if( typeof(req.body) == 'object' ){
+      var aid = req.body.aid;
+      console.log("req.body");
+      console.log(req.body);
+
+      querySQL = "UPDATE activities SET start = '"+req.body.start+"'::timestamptz WHERE aid = "+aid+" and pointid_point = "+pointid+";";
+      // setActivityByPid(pid, req.body);
+      // // see if we have the aid on activities    
+      // //else add the req.body to the pid on activities
+    }
+  } else {
+    // // were adding a new one because it has no aid (activity id)
+    // addActivityByPid(pid, req.body);
+    // INSERT INTO activities(title, description, responsible, start, allday, pid_proj) VALUES ('Budget Revision', 'The monthly task to revise the operational expenses and profits.', 'João Santos', '2014-06-20 00:00:00.000000', true, 1);
+    // querySQL = "INSERT INTO activities(title, description, responsible, start, allday, pid_proj) VALUES ("+req.body.title+", "+req.body.title+") RETURNING aid";
+    querySQL = "INSERT INTO activities(title, responsible, start, allday, pid_proj, pointid_point) VALUES ('"+req.body.title+"', '"+req.body.responsible+"', '"+req.body.start+"'::timestamptz, "+req.body.allDay+", "+pid+", "+pointid+") RETURNING aid;";
+    // console.log('querySQL');
+    // console.log(querySQL);
+  }
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query(querySQL, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        req.body.aid = row.aid;
+      })
+      res.json(req.body);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+}
+
+// to test...
 exports.getParameterReadings = function(req, res){
   console.log('API call: getParameterReadings');
   var pid = req.params.pid;
   var iid = req.params.iid;
   var parmid = req.params.parmid;
 
-  var parameter = findParameterByParmId(iid, parmid);
-  console.log(parameter.readings);
-  res.json(parameter.readings);
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "SELECT readings FROM parameters WHERE parmid = "+parmid+";";
+    client.query(q, function(err, res1) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results for getParameterReadings: "+res1.rows.length);
+      res1.rows.forEach(function(row){
+        var readingsInt = row.readings.map(function(item){
+          return parseInt(item, 10);
+        });
+        console.log(readingsInt);
+        result = readingsInt;
+        // res.json(result);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+
+      res.json(result);
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+  // var parameter = findParameterByParmId(iid, parmid);
+  // console.log(parameter.readings);
+  // res.json(parameter.readings);
 }
 
 
@@ -1332,11 +1527,51 @@ exports.getParameterPointReadings = function(req, res){
   console.log('API call: getParameterPointReadings');
   var pid = req.params.pid;
   var pointiid = req.params.pointiid;
-  var pointparmid = req.params.pointparmid;
+  var parmid = req.params.pointparmid;
 
-  var parameter = findParameterByPointParmId(pointiid, pointparmid);
-  console.log(parameter.readings);
-  res.json(parameter.readings);
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "SELECT readings FROM parameters WHERE parmid = "+parmid+";";
+    client.query(q, function(err, res1) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results for getParameterPointReadings: "+res1.rows.length);
+      res1.rows.forEach(function(row){
+        var readingsInt = row.readings.map(function(item){
+          return parseInt(item, 10);
+        });
+        var readingsIntArr = [];
+        console.log('lennnnnnnn: '+readingsInt.length);
+        for(var i = 0; i<readingsInt.length; i++){
+          var aux = [i, readingsInt[i]];
+          console.log("aux");
+          console.log(aux);
+          readingsIntArr.push(aux);
+        }
+        console.log('readingsIntArr');
+        console.log(readingsIntArr);
+
+        result = readingsIntArr;
+        // res.json(result);
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+
+      res.json(result);
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
+  // var parameter = findParameterByPointParmId(pointiid, pointparmid);
+  // console.log(parameter.readings);
+  // res.json(parameter.readings);
 }
 
 
@@ -1352,101 +1587,56 @@ exports.addParameterReadings = function(req, res){
 
 
   var readingToAdd = [];
-
-  // console.log(pointiid + " " + pointparmid);
-
-  // get readings entry for pointiid and pointparmid
   var parameter = findParameterByParmId(iid, parmid);
-  console.log("parameter");
-  console.log(parameter);
-  var readings = parameter.readings;
 
-  
-  parameter.value = req.body.value;
-
-  // see if date was provided. if not, we need to find the last reading id, increment it and set to readingToAdd
-
-  var reading_id = ordergetBiggestXInReadings(parameter.readings);
-  // console.log("reading_id : "+reading_id);
-
-  if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
-    readingToAdd = [ reading_id, req.body.value ]
-  }
-
-  // push readingToAdd to the readings array
-  readings.push(readingToAdd);
-
-  res.json(parameter);
-}
+  // UPDATE parameters SET readings = array_append( (select readings from parameters where parmid=4), '55') WHERE parmid=4;
 
 
-exports.addParameterPointReadings = function(req, res){
-  console.log('API call: addParameterPointReadings');
-  var pointiid = req.params.pointiid;
-  var pointparmid = req.params.pointparmid;
-
-  var readingToAdd = [];
-
-  // console.log(pointiid + " " + pointparmid);
-
-  // get readings entry for pointiid and pointparmid
-  var parameter = findParameterByPointParmId(pointiid, pointparmid);
-  // console.log(parameter);
-  var readings = parameter.readings;
-
-  
-  parameter.value = req.body.value;
-
-  // see if date was provided. if not, we need to find the last reading id, increment it and set to readingToAdd
-
-  var reading_id = ordergetBiggestXInReadings(parameter.readings);
-  // console.log("reading_id : "+reading_id);
-
-  if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
-    readingToAdd = [ reading_id, req.body.value ]
-  }
-
-  // push readingToAdd to the readings array
-  readings.push(readingToAdd);
-
-  res.json(parameter);
-};
-
-
-
-
-exports.addParameterPointMultipleReadings = function(req, res){
-  console.log('API call: addParameterPointMultipleReadings');
-  var pointiid = req.params.pointiid;
-  var pointparmid = req.params.pointparmid;
-
-  var readingToAdd = [];
-
-  // console.log(pointiid + " " + pointparmid);
-
-  // get readings entry for pointiid and pointparmid
-  var parameter = findParameterByPointParmId(pointiid, pointparmid);
-  // console.log(parameter);
-  var readings = parameter.readings;
-
-  
-  // console.log("req.body");
-  // console.log(req.body);
-
-  console.log("parameter");
-  console.log(parameter);
-
-  req.body.forEach(function(readValue){
-    var reading_id = ordergetBiggestXInReadings(parameter.readings);
-    // console.log(readValue);
-    if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
-      readingToAdd = [ reading_id, readValue ];
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
     }
+    // var q = "INSERT INTO parameters(title, unit, alarm, value, objective, min, max, readings, iid_ind) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", "+req.body.objective+", "+req.body.min+", "+req.body.max+", ARRAY["+req.body.value+"], "+iid+") RETURNING parmid;";
+    var q = "UPDATE parameters SET readings = array_append( (select readings from parameters where parmid="+parmid+"), '"+req.body.value+"') WHERE parmid="+parmid+";";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results addParameterPoint: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        // req.body.parmid = row.parmid;
+        // parameters.push(req.body);
 
-    readings.push(readingToAdd);
-  })
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      parameter.value = req.body.value;
+      res.json(parameter);
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
 
-  parameter.value = req.body[req.body.length-1];  // ULTIMO DO ARRAY
+
+
+
+
+
+
+
+  // // console.log(pointiid + " " + pointparmid);
+
+  // // get readings entry for pointiid and pointparmid
+  // var parameter = findParameterByParmId(iid, parmid);
+  // console.log("parameter");
+  // console.log(parameter);
+  // var readings = parameter.readings;
+
+  
+  // parameter.value = req.body.value;
 
   // // see if date was provided. if not, we need to find the last reading id, increment it and set to readingToAdd
 
@@ -1460,10 +1650,223 @@ exports.addParameterPointMultipleReadings = function(req, res){
   // // push readingToAdd to the readings array
   // readings.push(readingToAdd);
 
-  console.log("parameter");
-  console.log(parameter);
+  // res.json(parameter);
+}
 
-  res.json(parameter);
+
+exports.addParameterPointReadings = function(req, res){
+  console.log('API call: addParameterPointReadings');
+  var iid = req.params.pointiid;
+  var parmid = req.params.pointparmid;
+
+
+  var readingToAdd = [];
+  var parameter = {};
+
+  // UPDATE parameters SET readings = array_append( (select readings from parameters where parmid=4), '55') WHERE parmid=4;
+
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    // var q = "INSERT INTO parameters(title, unit, alarm, value, objective, min, max, readings, iid_ind) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", "+req.body.objective+", "+req.body.min+", "+req.body.max+", ARRAY["+req.body.value+"], "+iid+") RETURNING parmid;";
+    var q = "UPDATE parameters SET readings = array_append( (select readings from parameters where parmid="+parmid+"), '"+req.body.value+"') WHERE parmid="+parmid+";";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results updateParameterPointReadings: "+result.rows.length);
+      var q2 = "UPDATE parameters SET value = "+req.body.value+" where parmid="+parmid+";";
+      client.query(q2, function(err, result2){
+        if(err) {
+          return console.error('error running query', err);
+        }
+        parameter.value = req.body.value;
+        res.json(parameter);
+        client.end();
+      });
+
+
+      
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      // client.end();
+    });
+  });
+
+
+
+  // var readingToAdd = [];
+
+  // // console.log(pointiid + " " + pointparmid);
+
+  // // get readings entry for pointiid and pointparmid
+  // var parameter = findParameterByPointParmId(pointiid, pointparmid);
+  // // console.log(parameter);
+  // var readings = parameter.readings;
+
+  
+  // parameter.value = req.body.value;
+
+  // // see if date was provided. if not, we need to find the last reading id, increment it and set to readingToAdd
+
+  // var reading_id = ordergetBiggestXInReadings(parameter.readings);
+  // // console.log("reading_id : "+reading_id);
+
+  // if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
+  //   readingToAdd = [ reading_id, req.body.value ]
+  // }
+
+  // // push readingToAdd to the readings array
+  // readings.push(readingToAdd);
+
+  // res.json(parameter);
+};
+
+
+
+
+exports.addParameterPointMultipleReadings = function(req, res){
+  console.log('API call: addParameterPointMultipleReadings');
+  var iid = req.params.pointiid;
+  var parmid = req.params.pointparmid;
+
+  var readingToAdd = [];
+  var parameter = {};
+
+  // UPDATE parameters SET readings = ((select readings from parameters where parmid=4) || ARRAY['55'::character varying, '33']) WHERE parmid=4;
+  // mas para isto é preciso que construa o ARRAY com ::character varying antes!
+
+  var str = '';
+  for(var i = 0; i < req.body.length; i++){
+    str += "'"+req.body[i]+"'";
+    if(i==0)
+      str+="::character varying"
+    if(i<req.body.length-1)
+      str+=", "
+  }
+
+  console.log("Final string:");
+  console.log(str);
+
+  // var q = "UPDATE parameters SET readings = array_append( (select readings from parameters where parmid="+parmid+"), '"+req.body.value+"') WHERE parmid="+parmid+";";
+
+  // UPDATE parameters SET readings = array_append( (select readings from parameters where parmid=4), '55') WHERE parmid=4;
+
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    // var q = "INSERT INTO parameters(title, unit, alarm, value, objective, min, max, readings, iid_ind) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", "+req.body.objective+", "+req.body.min+", "+req.body.max+", ARRAY["+req.body.value+"], "+iid+") RETURNING parmid;";
+    var q = "UPDATE parameters SET readings = ((select readings from parameters where parmid="+parmid+") || ARRAY["+str+"]) WHERE parmid="+parmid+";";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results updateParameterPointReadings: "+result.rows.length);
+      var q2 = "UPDATE parameters SET value = "+req.body[req.body.length-1]+" where parmid="+parmid+";";
+      client.query(q2, function(err, result2){
+        if(err) {
+          return console.error('error running query', err);
+        }
+        parameter.value = req.body[req.body.length-1];
+        res.json(parameter);
+        client.end();
+      });
+
+
+      
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      // client.end();
+    });
+  });
+
+  // var client = new pg.Client(conString);
+  // client.connect(function(err) {
+  //   if(err) {
+  //     return console.error('could not connect to postgres', err);
+  //   }
+  //   // var q = "INSERT INTO parameters(title, unit, alarm, value, objective, min, max, readings, iid_ind) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", "+req.body.objective+", "+req.body.min+", "+req.body.max+", ARRAY["+req.body.value+"], "+iid+") RETURNING parmid;";
+  //   var q2 = "UPDATE parameters SET value = "+req.body[req.body.length-1]+" where parmid="+parmid+";";
+  //   client.query(q2, function(err, result) {
+  //     if(err) {
+  //       return console.error('error running query', err);
+  //     }
+  //     console.log("Number of results updateParameterPointReadings: "+result.rows.length);
+  //     for(var i = 0; i < req.body.length-1; i++){
+  //       var q = "UPDATE parameters SET readings = array_append( (select readings from parameters where parmid="+parmid+"), '"+req.body[i]+"') WHERE parmid="+parmid+";";
+  //       client.query(q, function(err, result2){
+  //         if(err) {
+  //           return console.error('error running query', err);
+  //         }
+  //         if(i == req.body.length-1){
+  //           parameter.value = req.body[req.body.length-1];
+  //           res.json(parameter);
+  //           client.end();
+  //         }
+  //       });
+  //     }
+  //     // res.json(projects);
+  //     // console.log(result.rows[0].theTime);
+  //     //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+  //     // client.end();
+  //   });
+  // });
+
+
+
+
+
+
+  // // console.log(pointiid + " " + pointparmid);
+
+  // // get readings entry for pointiid and pointparmid
+  // var parameter = findParameterByPointParmId(pointiid, pointparmid);
+  // // console.log(parameter);
+  // var readings = parameter.readings;
+
+  
+  // // console.log("req.body");
+  // // console.log(req.body);
+
+  // console.log("parameter");
+  // console.log(parameter);
+
+  // req.body.forEach(function(readValue){
+  //   var reading_id = ordergetBiggestXInReadings(parameter.readings);
+  //   // console.log(readValue);
+  //   if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
+  //     readingToAdd = [ reading_id, readValue ];
+  //   }
+
+  //   readings.push(readingToAdd);
+  // })
+
+  // parameter.value = req.body[req.body.length-1];  // ULTIMO DO ARRAY
+
+  // // // see if date was provided. if not, we need to find the last reading id, increment it and set to readingToAdd
+
+  // // var reading_id = ordergetBiggestXInReadings(parameter.readings);
+  // // // console.log("reading_id : "+reading_id);
+
+  // // if(req.body.date == undefined || req.body.date == null || req.body.date == ''){
+  // //   readingToAdd = [ reading_id, req.body.value ]
+  // // }
+
+  // // // push readingToAdd to the readings array
+  // // readings.push(readingToAdd);
+
+  // console.log("parameter");
+  // console.log(parameter);
+
+  // res.json(parameter);
 };
 
 
@@ -1481,60 +1884,110 @@ exports.getOrderedPointValuesOfParameter = function(req, res){
 
   console.log(pid + " " + parmid);
 
-  var parameterToMatch = findParameterByParmId(iid, parmid);
-  var titleToMatch = parameterToMatch.title;
-  console.log("titleToMatch");
-  console.log(titleToMatch);
-
-  // :pid (para ir buscar todos os iid deste pid)
-  var pointIndicators = getPointIndicatorById(pid);
-  // console.log("indicators");
-  // console.log(indicators);
-  var iid_arr = [];
-  pointIndicators.forEach(function(point){
-    // console.log("point");
-    // console.log(point);
-    var pointid = point.pointid;
-    var coord = point.coord;
-
-    var indicators = point.indicators;
-    // console.log("indicators");
-    // console.log(indicators);
-    indicators.forEach(function(ind){
-      var parameter = findIndicatorParametersByPointIId(ind.pointiid);
-      // console.log("parameter");
-      // console.log(parameter);
-      parameter.forEach(function(parm){
-        // console.log("toAdd");
-        // console.log(pointid + " " + parm.value);
-        if(parm.title == titleToMatch){
-          pointValues.push([ pointid, parm.value ]);
-          var locToAdd = coord[0];
-          locToAdd.pointid = pointid;
-          pointCoords.push(locToAdd);
-        }
-      });
-    })
-    
-  });
-
-
-  console.log("comparing!");
-  pointValues.sort(function(a,b) {
-    return parseInt(b) - parseInt(a);
-  });
 
   var toRet = {};
-  toRet.ranking = pointValues;
-  console.log("pointCoords");
-  console.log(pointCoords);
-  // toRet.locations = getLocationsByPId(pid); // AQUI TENHO DE FILTRAR PELOS pointid acima filtrados
-  toRet.locations = pointCoords; // AQUI TENHO DE FILTRAR PELOS pointid acima filtrados
 
-  // para cada iid
-  // :parmid (para dps ir buscar o parameter Title e procurar todos parameters nos iid q têm este Title)
-  // no retorno, criar array de elemToAdd. para cada elemToAdd, ter o pointid e value
+  
 
-  // var pointValues = [ [ 3 , 88] , [ 8 , 55] , [ 2 , 30] , [ 5 , 20] , [ 10 , 19] , [ 9 , 18], [ 1 , 4] , [ 7 , 3]  ];
-  res.json(toRet);
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    // var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point = "+pointid+";";
+    var q = "select pointid_point as pointid, x, y, parameters.value from parameters, indicators, points where iid_ind = iid and indicators.pointid_point = points.pointid and indicators.pid_proj = "+pid+" and pointid_point is not null and parameters.title = (select title from parameters where parmid="+parmid+");";
+    // NA QUERY TB QUEREMOS EVITAR OS QUE TÊM POINTID!
+
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+
+      for(var i = 0; i < result.rows.length; i++){
+        var row = result.rows[i];
+        // console.log(row);
+        var locToAdd = row;
+        pointCoords.push(locToAdd);
+
+        pointValues.push([ row.pointid, row.value ]);
+      }
+
+      pointValues.sort(function(a,b) {
+        return parseInt(b) - parseInt(a);
+      });
+
+      toRet.locations = pointCoords;
+      toRet.ranking = pointValues;
+
+
+      res.json(toRet);
+
+
+      client.end();
+    });
+  });
+
+
+
+
+
+
+  // var parameterToMatch = findParameterByParmId(iid, parmid);
+  // var titleToMatch = parameterToMatch.title;
+  // console.log("titleToMatch");
+  // console.log(titleToMatch);
+
+  // // :pid (para ir buscar todos os iid deste pid)
+  // var pointIndicators = getPointIndicatorById(pid);
+  // // console.log("indicators");
+  // // console.log(indicators);
+  // var iid_arr = [];
+  // pointIndicators.forEach(function(point){
+  //   // console.log("point");
+  //   // console.log(point);
+  //   var pointid = point.pointid;
+  //   var coord = point.coord;
+
+  //   var indicators = point.indicators;
+  //   // console.log("indicators");
+  //   // console.log(indicators);
+  //   indicators.forEach(function(ind){
+  //     var parameter = findIndicatorParametersByPointIId(ind.pointiid);
+  //     // console.log("parameter");
+  //     // console.log(parameter);
+  //     parameter.forEach(function(parm){
+  //       // console.log("toAdd");
+  //       // console.log(pointid + " " + parm.value);
+  //       if(parm.title == titleToMatch){
+  //         pointValues.push([ pointid, parm.value ]);
+  //         var locToAdd = coord[0];
+  //         locToAdd.pointid = pointid;
+  //         pointCoords.push(locToAdd);
+  //       }
+  //     });
+  //   })
+    
+  // });
+
+
+  // console.log("comparing!");
+  // pointValues.sort(function(a,b) {
+  //   return parseInt(b) - parseInt(a);
+  // });
+
+  // var toRet = {};
+  // toRet.ranking = pointValues;
+  // console.log("pointCoords");
+  // console.log(pointCoords);
+  // // toRet.locations = getLocationsByPId(pid); // AQUI TENHO DE FILTRAR PELOS pointid acima filtrados
+  // toRet.locations = pointCoords; // AQUI TENHO DE FILTRAR PELOS pointid acima filtrados
+
+  // // para cada iid
+  // // :parmid (para dps ir buscar o parameter Title e procurar todos parameters nos iid q têm este Title)
+  // // no retorno, criar array de elemToAdd. para cada elemToAdd, ter o pointid e value
+
+  // // var pointValues = [ [ 3 , 88] , [ 8 , 55] , [ 2 , 30] , [ 5 , 20] , [ 10 , 19] , [ 9 , 18], [ 1 , 4] , [ 7 , 3]  ];
+  // res.json(toRet);
 }

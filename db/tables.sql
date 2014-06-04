@@ -7,7 +7,7 @@
 
 
 
-
+DROP TABLE activities;
 DROP TABLE parameters;
 DROP TABLE indicators;
 DROP TABLE points;
@@ -125,3 +125,30 @@ ALTER TABLE parameters
   OWNER TO postgres;
 
 
+
+
+
+CREATE TABLE activities
+(
+  aid serial NOT NULL,
+  title character varying(50),
+  description text,
+  responsible character varying(30),
+  start timestamp with time zone,
+  "end" timestamp with time zone,
+  allDay boolean,
+  pid_proj integer NOT NULL,
+  pointid_point integer,
+  CONSTRAINT activities_pkey PRIMARY KEY (aid),
+  CONSTRAINT activities_pid_proj_fkey FOREIGN KEY (pid_proj)
+      REFERENCES projects (pid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT activities_pointid_point_fkey FOREIGN KEY (pointid_point)
+      REFERENCES points (pointid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE activities
+  OWNER TO postgres;

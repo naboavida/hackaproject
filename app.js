@@ -91,7 +91,9 @@ app.get('/geoapi/:pid/:pointid', api.geoapiPoint);
 app.post('/geoapi/addPoint/:pid', api.geoapiAddPoint);
 
 app.get('/api/activities/:pid', api.getActivities);
+app.get('/api/activities/:pid/:pointid', api.getActivitiesPoint);
 app.post('/api/activities/:pid', api.setActivities);
+app.post('/api/activities/:pid/:pointid', api.setActivitiesPoint);
 
 
 

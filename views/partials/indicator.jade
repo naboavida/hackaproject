@@ -41,6 +41,8 @@ div.mainDiv
 							circle(style='stroke-width:5;stroke:rgba(55,255,55,0.25)', cx="110", cy="30", r="20", fill="green")
 			li.item(ng-repeat='parameter in parameters')
 				div.widgetContent
+					div.line
+						p(ng-click='deleteParameter(parameter.parmid)') delete
 					h3.widgetTitle {{parameter.title}}
 					div.line
 						div.line-item.value {{parameter.value}}

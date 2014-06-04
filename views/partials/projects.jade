@@ -12,13 +12,15 @@ div
   h2(style='text-align:center;') Your Projects
   ul.menuItem.menuItemLarge
     li.listItem.listItemLarge(ng-repeat="project in projects")
-      a(href='/dashboard/{{project.id}}')
-        div.innerItem.innerItemBig
+      div.innerItem.innerItemBig
+        a(href='/dashboard/{{project.pid}}')
           img(src='pics/saotome.jpg')
           div
             p.projectTitle {{project.title}}
             p(style='margin-top:5px;font-size:12px;'){{project.location}}
             p(style='margin-top:5px;font-size:12px;'){{project.area}} m2
+        div
+          p(ng-click='deleteProject(project.pid)') delete
     li.listItem.listItemLarge.add-project
       a(href='/addProject')
         div.innerItem.innerItemBig

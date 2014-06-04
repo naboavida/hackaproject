@@ -120,6 +120,18 @@ function ProjectsCtrl($scope, $http){
     // $scope.projects.push($scope.form);
     $scope.form = {};
   }
+
+  $scope.deleteProject = function(pid){
+    console.log("deleteProject: "+pid);
+
+    $http.delete('/api/project/'+pid).
+      success(function(data, status){
+        console.log("deleted project");
+        console.log(data);
+        $scope.projects = data;
+      });
+    
+  }
 };
 
 function DashboardCtrl($scope, $http, $routeParams){
@@ -155,6 +167,17 @@ function DashboardCtrl($scope, $http, $routeParams){
       $scope.form = {};
       // fazer o post
       // obter o indicators q este post retorna
+    }
+
+    $scope.deleteIndicator = function(iid) {
+      console.log('deleteIndicator iid: '+iid);
+
+      $http.delete('/api/indicator/'+$scope.pid+'/'+iid).
+        success(function(data, status){
+          console.log("deleted indicator");
+          console.log(data);
+          $scope.indicators = data;
+        });
     }
   
 };
@@ -221,6 +244,17 @@ function IndicatorCtrl($scope, $http, $routeParams){
     error(function (data, status) {
       $scope.data = data || "Request failed";
     });
+
+    $scope.deleteParameter = function(parmid){
+      console.log('deleteParameter : '+$scope.iid+' '+parmid);
+
+      $http.delete('/api/parameter/'+$scope.iid+'/'+parmid).
+        success(function(data, status){
+          console.log("deleted parameter");
+          console.log(data);
+          $scope.parameters = data;
+        });
+    };
 };
 
 
@@ -602,6 +636,7 @@ function DemoController($scope, $http, $routeParams, $location){
   
 
   $scope.addPointMode = false;
+  $scope.deletePointMode = false;
 
   angular.extend($scope, {
       london: {
@@ -648,13 +683,25 @@ function DemoController($scope, $http, $routeParams, $location){
 
 
   $scope.$on('leafletDirectiveMarker.click', function(e, args) {
-      // Args will contain the marker name and other relevant information
-      console.log("Leaflet Click");
-      console.log(args);
-      console.log($scope.markers[args.markerName].pointid);
-      // agora é ir ao /dashboard/:pid/:pointid e ele faz o render do dashboard para o projectid e pointid
-      // console.log("/dashboardPoint/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid);
-      $location.path( "/dashboard/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid );
+      if($scope.deletePointMode == false){
+        // Args will contain the marker name and other relevant information
+        console.log("Leaflet Click");
+        // console.log(args);
+        // console.log($scope.markers[args.markerName].pointid);
+        // agora é ir ao /dashboard/:pid/:pointid e ele faz o render do dashboard para o projectid e pointid
+        // console.log("/dashboardPoint/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid);
+        $location.path( "/dashboard/"+$scope.pid+"/"+$scope.markers[args.markerName].pointid );
+      } else {
+        console.log("Leaflet Delete Point");
+        // chamar api delete point
+          // na resposta da api delete point
+            // tirar do $scope.markers
+        $http.delete('/geoapi/deletePoint/'+$scope.markers[args.markerName].pointid).
+          success(function(data){
+            $scope.markers.splice(args.markerName, 1);
+          });
+      }
+      
   });
 
   var get_url = '/geoapi/'+$scope.pid;
@@ -694,6 +741,15 @@ function DemoController($scope, $http, $routeParams, $location){
       }
         
     };
+
+    $scope.deletePoint = function(){
+      console.log("deletePointMode");
+      if(!$scope.deletePointMode){
+        $scope.deletePointMode = true;
+      } else {
+        $scope.deletePointMode = false;
+      }
+    }
 }
 
 

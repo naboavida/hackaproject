@@ -497,6 +497,18 @@ function ordergetBiggestXInReadings(readings_arr){
 
 
 
+function findIndexOfProjectByPid(pid){
+  console.log("findIndexOfProjectByPid");
+  for(var i in projects){
+    console.log(projects[i]);
+    console.log((projects[i].pid == pid) || (projects[i].id == pid));
+    if( (projects[i].pid == pid) || (projects[i].id == pid) ){
+      return i;
+    }
+  }
+}
+
+
 
 
 
@@ -523,7 +535,7 @@ function ordergetBiggestXInReadings(readings_arr){
 // get
 exports.getProjects = function(req, res){
   // var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'}];
-  var projects = [];
+  projects = [];
 
   var client = new pg.Client(conString);
   client.connect(function(err) {
@@ -536,10 +548,15 @@ exports.getProjects = function(req, res){
       }
       console.log("Number of results: "+result.rows.length);
       result.rows.forEach(function(row){
-        console.log(row);
-        projects.push({"id":row.pid, "title":row.title, "location":row.location, "area":row.area});
+        // console.log(row);
+        // projects.push({"id":row.pid, "title":row.title, "location":row.location, "area":row.area});
+        // console.log("project added");
+        // console.log(projects);
         dashboards.push({"id":row.pid, "indicators":[] });
       })
+      projects = result.rows;
+      console.log("projects");
+      console.log(projects);
       res.json(projects);
       // console.log(result.rows[0].theTime);
       //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
@@ -566,7 +583,7 @@ exports.addProject = function(req, res){
       console.log("Number of results: "+result.rows.length);
       result.rows.forEach(function(row){
         console.log(row);
-        req.body.id = row.pid;
+        req.body.pid = row.pid;
         projects.push(req.body);
         dashboards.push({"id":req.body.id, "indicators":[] });
 
@@ -594,6 +611,44 @@ exports.addProject = function(req, res){
   
 };
 
+exports.deleteProject = function(req, res){
+  console.log('API call: deleteProject');
+  var pid = req.params.pid;
+  console.log('projects before delete');
+  console.log(projects);
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    // var q = "INSERT INTO projects(title, area, location) VALUES ('"+req.body.title+"', '"+req.body.area+"', '"+req.body.location+"') RETURNING pid;";
+    var q = "DELETE FROM projects WHERE pid = "+pid+" RETURNING pid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+
+      // ou entao apenas fazer o select à BD!!!!
+      //removeProjectByPid(pid);
+      var i = findIndexOfProjectByPid(pid);
+      console.log('i');
+      console.log(i);
+      projects.splice(i, 1);
+      
+      // ou entao apenas fazer o select à BD!!!!
+
+      console.log('projects after delete');
+      console.log(projects);
+
+      res.json(projects);
+      client.end();
+    });
+  });
+
+  
+};
 
 exports.getDashboard = function(req, res){
   console.log('API call: getDashboard');
@@ -837,7 +892,7 @@ exports.addIndicator = function(req, res){
       result.rows.forEach(function(row){
         console.log(row);
         req.body.iid = row.iid;
-        indicatorsResult.push(req.body);
+        // indicatorsResult.push(req.body);
         indicators.push( {"iid":req.body.iid, "parameters":[]} );
         res.json(indicatorsResult);
         // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
@@ -847,48 +902,40 @@ exports.addIndicator = function(req, res){
       //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
       client.end();
     });
+  });  
+};
+
+exports.deleteIndicator = function(req, res){
+  console.log('API call: deleteIndicator');
+  var pid = req.params.pid;
+  var iid = req.params.iid;
+
+  var project = findProjectById(pid);
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    // var q = "INSERT INTO projects(title, area, location) VALUES ('"+req.body.title+"', '"+req.body.area+"', '"+req.body.location+"') RETURNING pid;";
+    var q = "DELETE FROM indicators WHERE iid = "+iid+" RETURNING iid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+
+      var q2 = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point IS NULL;";
+      client.query(q2, function(err, result2) {
+        console.log("Number of results: "+result2.rows.length);
+
+        res.json(result2.rows);
+        client.end();
+      });
+    });
   });
 
-  
-
-  // req.body.iid = nextIID;
-  // nextIID++;
-
-  // var client = new pg.Client(conString);
-  // client.connect(function(err) {
-  //   if(err) {
-  //     return console.error('could not connect to postgres', err);
-  //   }
-  //   var q = "SELECT iid FROM indicators WHERE ";
-  //   client.query(q, function(err, result) {
-  //     if(err) {
-  //       return console.error('error running query', err);
-  //     }
-  //     console.log("Number of results: "+result.rows.length);
-  //     result.rows.forEach(function(row){
-  //       console.log(row);
-  //       req.body.iid = row;
-  //       indicatorsResult.push(req.body);
-  //       indicators.push( {"iid":req.body.iid, "parameters":[]} );
-  //       // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
-  //     })
-  //     // res.json(projects);
-  //     // console.log(result.rows[0].theTime);
-  //     //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
-  //     client.end();
-  //   });
-  // });
-
-  
-  
-
-
-  // init parameters for iid
-  
-  // console.log(indicators);
-
-
-  
+  // res.json({});
 };
 
 
@@ -959,6 +1006,7 @@ exports.addPointIndicator = function(req, res){
 //   res.json(projects);
 // };
 
+
 exports.getParameter = function(req, res){
   console.log('API call: getParameter');
   var iid = req.params.iid;
@@ -997,6 +1045,44 @@ exports.getParameter = function(req, res){
 
   // res.json(result);
 };
+
+
+
+exports.deleteParameter = function(req, res){
+  console.log('API call: deleteParameter');
+
+  
+  var iid = req.params.iid;
+  var parmid = req.params.parmid;
+
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    // var q = "INSERT INTO projects(title, area, location) VALUES ('"+req.body.title+"', '"+req.body.area+"', '"+req.body.location+"') RETURNING pid;";
+    var q = "DELETE FROM parameters WHERE parmid = "+parmid+" RETURNING parmid;";
+    console.log('q: '+q);
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+
+      var q2 = "SELECT * FROM parameters WHERE iid_ind = "+iid+";";
+      client.query(q2, function(err, result2) {
+        console.log("Number of results2: "+result2.rows.length);
+        console.log('result2.rows');
+        console.log(result2.rows);
+        res.json(result2.rows);
+        client.end();
+      });
+    });
+  });
+
+  // res.json({});
+}
 
 
 
@@ -1297,6 +1383,37 @@ exports.geoapiAddPoint = function(req, res){
   // console.log(pointDashboards);
 
   // res.json(pointToAdd);
+};
+
+
+exports.geoapiDeletePoint = function(req, res){
+  console.log('API call: geoapiDeletePoint');
+  var pointid = req.params.pointid;
+
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    // var q = "INSERT INTO projects(title, area, location) VALUES ('"+req.body.title+"', '"+req.body.area+"', '"+req.body.location+"') RETURNING pid;";
+    var q = "DELETE FROM points WHERE pointid = "+pointid+" RETURNING pointid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+
+      // se calhar devolvemos o conjunto de pontos actuais para o pid (project) para mostar as alteracoes à bd!
+      // para atacar o problema de dois users apagarem pontos diferentes no mm projecto!
+
+      res.json(pointid);
+      client.end();
+    });
+  });
+
+  // console.log("pointid: "+pointid);
+  // res.json(pointid);
 };
 
 

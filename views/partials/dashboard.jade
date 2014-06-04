@@ -24,6 +24,9 @@ div.mainDiv
 				div
 					button(ng-click='addPoint()') Add Point
 					p {{addPointMode}}
+				div
+					button(ng-click='deletePoint()') Delete Point
+					p {{deletePointMode}}
 				div#map
 					leaflet(center="madeira",height="400",markers="markers")
 					//- leaflet(center="madeira",width="500",height="400",markers="markers",event-broadcast="events")
@@ -31,6 +34,8 @@ div.mainDiv
 		ul.list-item
 			li.item(ng-repeat='indicator in indicators')
 				div.widgetContent
+					div.line
+						p(ng-click='deleteIndicator(indicator.iid)') delete
 					h3.widgetTitle {{indicator.title}}
 					div.line
 						div.line-item.value {{indicator.value}}
@@ -39,6 +44,7 @@ div.mainDiv
 						nvd3-bullet-chart(data='bulletData', width='100', height='10', showXAxis="false", margin="{left:5,top:0,bottom:0,right:5}", showYAxis="false", tooltips="true", interactive="false")
 					div.line
 						a(href='/indicator/{{pid}}/{{indicator.iid}}') Open
+					
 					div.bottomRow
 						//- div(class='{{indicator.alarm}}')
 						div(class='{{indicator.alarm}}')

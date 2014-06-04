@@ -2,15 +2,24 @@
 -- demo data
 
 
-delete from indicators
-delete from points
-delete from projects
+-- delete from indicators
+-- delete from points
+-- delete from projects
 
 
 
 INSERT INTO projects(
             title, area, location)
     VALUES ('Water Collaboration', 123.5, 'São Tomé');
+    
+
+INSERT INTO points(
+            x, y, location, picturename, pid_proj)
+    VALUES (32.666667, -16.85, 'Santa Maria', 'santa_maria_point.jpg', 1);
+INSERT INTO points(
+            x, y, location, picturename, pid_proj)
+    VALUES (32.666667, -16.95, 'São José', 'sao_jose_point.jpg', 1);
+
 
 INSERT INTO indicators(
             title, unit, alarm, value, readings, pid_proj)
@@ -24,12 +33,7 @@ INSERT INTO parameters(
     VALUES ('Coliforms', 'UFC/100ml', 'yes', 6, 2, 0, 6, ARRAY[6], 1);
 
 
-INSERT INTO points(
-            x, y, location, picturename, pid_proj)
-    VALUES (32.666667, -16.85, 'Santa Maria', 'santa_maria_point.jpg', 1);
-INSERT INTO points(
-            x, y, location, picturename, pid_proj)
-    VALUES (32.666667, -16.95, 'São José', 'sao_jose_point.jpg', 1);
+
 
 
 INSERT INTO indicators(

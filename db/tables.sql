@@ -18,9 +18,9 @@ DROP TABLE projects;
 CREATE TABLE projects
 (
   pid serial NOT NULL,
-  title character varying(20) NOT NULL,
+  title character varying(50) NOT NULL,
   area double precision,
-  location character varying,
+  location character varying(50),
   CONSTRAINT pid PRIMARY KEY (pid)
 )
 WITH (
@@ -37,8 +37,8 @@ CREATE TABLE points
   pointid serial NOT NULL,
   x double precision NOT NULL,
   y double precision NOT NULL,
-  location character varying(30),
-  picturename character varying(40),
+  location character varying(50),
+  picturename character varying(50),
   pid_proj integer NOT NULL,
   CONSTRAINT points_pkey PRIMARY KEY (pointid),
   CONSTRAINT points_pid_proj_fkey FOREIGN KEY (pid_proj)
@@ -53,26 +53,6 @@ ALTER TABLE points
 
 
 
-
--- CREATE TABLE indicators
--- (
---   iid serial NOT NULL,
---   title character varying(20) NOT NULL,
---   unit character varying(12),
---   alarm character varying(12),
---   value character varying(12),
---   readings character varying(12)[],
---   pid_proj integer NOT NULL,
---   CONSTRAINT indicators_pkey PRIMARY KEY (iid),
---   CONSTRAINT indicators_pid_proj_fkey FOREIGN KEY (pid_proj)
---       REFERENCES projects (pid) MATCH SIMPLE
---       ON UPDATE NO ACTION ON DELETE CASCADE
--- )
--- WITH (
---   OIDS=FALSE
--- );
--- ALTER TABLE indicators
---   OWNER TO postgres;
 
 CREATE TABLE indicators
 (

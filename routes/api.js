@@ -962,7 +962,7 @@ exports.addPointIndicator = function(req, res){
       result.rows.forEach(function(row){
         console.log(row);
         req.body.iid = row.iid;
-        indicatorsResult.push(req.body);
+        // indicatorsResult.push(req.body);
         // indicators.push( {"iid":req.body.iid, "parameters":[]} );
         pointIndicators.push({"pointiid":req.body.iid, "parameters":[] });
         res.json(indicatorsResult);

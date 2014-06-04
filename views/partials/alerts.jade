@@ -1,0 +1,14 @@
+div.wrap
+  ul.breadcrumb
+    li
+      a(href='/') Home
+    li
+      a(href='') Alerts
+      
+div
+  h2(style='text-align:center;margin-bottom:25px;') Alerts
+  ul.menuItem.menuItemLarge
+    li.listItem.listItemLarge(ng-repeat="alert in alerts")
+      div.innerItem.innerItemBig
+        p.projectTitle(style='margin:5px;') {{alert.title}}
+        a(href='/parameter/{{alert.pid}}/{{alert.iid}}/{{alert.parmid}}/{{alert.pointid}}') Open Parameter

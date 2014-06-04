@@ -100,6 +100,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         templateUrl: 'partials/liveSensorsReadings',
         controller: IndicatorPointCtrl
       }).
+      when('/alerts', {
+        templateUrl: 'partials/alerts',
+        controller: AlertsCtrl
+      }).
       otherwise({
         redirectTo: '/'
       });

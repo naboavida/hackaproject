@@ -7,6 +7,16 @@ block body
       ul
         li(style='float:left')
           div.button
+            p(onclick='$(".target").toggle();') Alerts
+            div(class='target', style='position:absolute;z-index:500;background-color:white;padding:5px;')
+              p(style='background-color:lightgrey;margin:2px;') waka
+              p(style='background-color:lightgrey;margin:2px;') maka
+              div.button
+                a(onclick='$(".target").hide();', href='/alerts') See all
+            script(type='text/javascript').
+              $(".target").hide();
+        li(style='float:left')
+          div.button
             a(href='', style='padding-bottom:3px;') Account
         li(style='float:left')
           div.button

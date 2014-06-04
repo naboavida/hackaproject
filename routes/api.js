@@ -76,7 +76,7 @@ var pg = require('pg');
 // var dbUrl = "tcp://postgres:maxtamaxta@localhost/nunoteste";
 var conString = "postgres://postgres:maxtamaxta@localhost/nunoteste";
 // var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
-var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
+// var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
 
 
 // var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'},
@@ -2107,4 +2107,30 @@ exports.getOrderedPointValuesOfParameter = function(req, res){
 
   // // var pointValues = [ [ 3 , 88] , [ 8 , 55] , [ 2 , 30] , [ 5 , 20] , [ 10 , 19] , [ 9 , 18], [ 1 , 4] , [ 7 , 3]  ];
   // res.json(toRet);
+}
+
+
+exports.getAlerts = function(req, res){
+  console.log('API call: getAlerts');
+
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query("select parmid, iid, pid_proj as pid, pointid_point as pointid, parameters.title, parameters.value, parameters.min, parameters.max from parameters, indicators where parameters.iid_ind=indicators.iid and (parameters.value::double precision < parameters.min::double precision or parameters.value::double precision > parameters.max::double precision) and parameters.alarm='yes'", function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      console.log(result.rows);
+      
+      res.json(result.rows);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+
 }

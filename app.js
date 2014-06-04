@@ -99,6 +99,8 @@ app.get('/api/activities/:pid/:pointid', api.getActivitiesPoint);
 app.post('/api/activities/:pid', api.setActivities);
 app.post('/api/activities/:pid/:pointid', api.setActivitiesPoint);
 
+app.get('/api/alerts', api.getAlerts);
+
 
 
 // redirect all others to the index (HTML5 history)

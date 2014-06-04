@@ -1196,3 +1196,61 @@ function Hello($scope, $http, $timeout) {
 function AddReadingCtrl($scope, $http){
   console.log("AddReadingCtrl");
 }
+
+
+function AlertsCtrl($scope, $http, $timeout){
+  console.log('AlertsCtrl');
+  // $scope.alerts = [{"alid":1, "title":"pH value outside limits in Water Collaboration project in São Tomé"},
+  //                  {"alid":2, "title":"Cleaning Biomass activity in two days (6th of July) in Point 1, São Tomé"},
+  //                  {"alid":3, "title":"temperature value outside limits in Water Collaboration project in São Tomé"}];
+  $scope.alerts = [];
+
+  $http.get('/api/alerts').
+    success(function(data, status){
+      //select * from parameters where value < min and value > max
+      console.log('read alerts');
+      console.log(data);
+      data.forEach(function(elem){
+        var str = '';
+        if(parseInt(elem.value) > parseInt(elem.max))
+          str = "Parameter "+elem.title+" has value ("+elem.value+") above the maximum value ("+elem.max+")";
+        else if(parseInt(elem.value) < parseInt(elem.min))
+          str = "Parameter "+elem.title+" is below ("+elem.value+") the minimum value ("+elem.min+")";
+
+        if(elem.pointid != undefined && elem.pointid != null)
+          str += " on point "+elem.pointid;
+        elem.title = str;
+        $scope.alerts.push(elem);
+      });
+    });
+
+  $scope.intervalFunction = function(){
+    $timeout(function() {
+      
+      $http.get('/api/alerts').
+        success(function(data, status){
+          //select * from parameters where value < min and value > max
+          $scope.alerts = [];
+          
+          console.log('read alerts');
+          console.log(data);
+          data.forEach(function(elem){
+            var str = '';
+            if(parseInt(elem.value) > parseInt(elem.max))
+              str = "Parameter "+elem.title+" has value ("+elem.value+") above the maximum value ("+elem.max+")";
+            else if(parseInt(elem.value) < parseInt(elem.min))
+              str = "Parameter "+elem.title+" is below ("+elem.value+") the minimum value ("+elem.min+")";
+
+            if(elem.pointid != undefined && elem.pointid != null)
+              str += " on point "+elem.pointid;
+            elem.title = str;
+            $scope.alerts.push(elem);
+          });
+        });
+
+      $scope.intervalFunction();
+    }, 2500)
+  };
+
+  $scope.intervalFunction();
+}

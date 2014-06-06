@@ -19,13 +19,62 @@ var users = [
   , { id: 2, username: 'jpsantos', password: 'pass', email: 'jpsantos@example.com' }
 ];
 
+var users = [];
+
+function refreshUsersFromDb(){
+	var pg = require('pg');
+	// var dbUrl = "tcp://postgres:maxtamaxta@localhost/nunoteste";
+	var conString = "postgres://postgres:maxtamaxta@localhost/nunoteste";
+	// var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
+	// var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
+	
+	var client = new pg.Client(conString);
+	  // var uid = req.session.passport.user;
+	  // var username = req.params.username;
+	  var result = {};
+
+	  client.connect(function(err) {
+	    if(err) {
+	      return console.error('could not connect to postgres', err);
+	    }
+	    client.query("SELECT uid as id, username, password, email FROM users", function(err, result) {
+	      if(err) {
+	        return console.error('error running query', err);
+	      }
+	      console.log("Number of results USERNAME: "+result.rows.length);
+	      // console.log(result.rows[0]);
+	      users = result.rows;
+	      console.log(users);
+	      // console.log(result.rows[0].theTime);
+	      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+	      client.end();
+	      
+	    });
+
+	  });
+	  setTimeout(refreshUsersFromDb, 30000);
+}
+refreshUsersFromDb();
+
+
+
+
 function findById(id, fn) {
-  var idx = id - 1;
-  if (users[idx]) {
-    fn(null, users[idx]);
-  } else {
-    fn(new Error('User ' + id + ' does not exist'));
+  // var idx = id - 1;
+  // if (users[idx]) {
+  //   fn(null, users[idx]);
+  // } else {
+  //   fn(new Error('User ' + id + ' does not exist'));
+  // }
+  var exists = -1;
+  for(var i in users){
+  	if(users[i].id == id)
+  		exists = i;
   }
+  if(exists != -1)
+  	fn(null, users[exists]);
+  else
+  	fn(new Error('User ' + id + ' does not exist'));
 }
 
 function findByUsername(username, fn) {
@@ -102,6 +151,8 @@ passport.deserializeUser(function(id, done) {
 //   however, in this example we are using a baked-in set of users.
 passport.use(new LocalStrategy(
   function(username, password, done) {
+  	refreshUsersFromDb();
+
     // asynchronous verification, for effect...
     process.nextTick(function () {
       

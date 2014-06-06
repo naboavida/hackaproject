@@ -564,7 +564,7 @@ function ExampleCtrl($scope, $http, $routeParams){
 
 
 function ExamplePointCtrl($scope, $http, $routeParams){
-  console.log("ExampleCtrl");
+  console.log("ExamplePointCtrl");
   var pointiid = $routeParams.pointiid;
   var pointparmid = $routeParams.pointparmid;
 
@@ -578,7 +578,9 @@ function ExamplePointCtrl($scope, $http, $routeParams){
 
   $http.get('/api/parameterPointReadings/'+pointiid+'/'+pointparmid).
     success(function(data, status) {
-      // console.log("yeah read readings!");
+      console.log("yeah read readings!");
+      console.log('/api/parameterPointReadings/'+pointiid+'/'+pointparmid);
+      console.log(data);
       $scope.exampleData = [
         {
             "key": "History",

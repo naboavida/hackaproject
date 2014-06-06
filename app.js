@@ -29,6 +29,43 @@ function findById(id, fn) {
 }
 
 function findByUsername(username, fn) {
+	// var pg = require('pg');
+	// // var dbUrl = "tcp://postgres:maxtamaxta@localhost/nunoteste";
+	// var conString = "postgres://postgres:maxtamaxta@localhost/nunoteste";
+	// // var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
+	// // var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
+	
+	// var client = new pg.Client(conString);
+	//   // var uid = req.session.passport.user;
+	//   // var username = req.params.username;
+	//   var result = {};
+	//   console.log('USERNAME');
+	//   console.log(username);
+
+	//   client.connect(function(err) {
+	//     if(err) {
+	//       return console.error('could not connect to postgres', err);
+	//     }
+	//     client.query("SELECT * FROM users WHERE username = '"+username+"'", function(err, result) {
+	//       if(err) {
+	//         return console.error('error running query', err);
+	//       }
+	//       console.log("Number of results USERNAME: "+result.rows.length);
+	//       console.log(result.rows[0]);
+	//       // console.log(result.rows[0].theTime);
+	//       //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+	//       client.end();
+	      
+	//     });
+
+	//   });
+
+	//   if(result.rows.length == 1)
+ //      	return fn(null, result.rows[0]);
+ //      else
+ //      	return fn(null, null);
+
+
   for (var i = 0, len = users.length; i < len; i++) {
     var user = users[i];
     if (user.username === username) {
@@ -46,12 +83,12 @@ function findByUsername(username, fn) {
 //   the user by ID when deserializing.
 passport.serializeUser(function(user, done) {
   // done(null, user.id);
-  console.log("serializeUser");
+  // console.log("serializeUser");
   done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
-  console.log("deserializeUser");
+  // console.log("deserializeUser");
   findById(id, function (err, user) {
     done(err, user);
   });
@@ -104,6 +141,7 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.favicon(path.join(__dirname, 'public/img/favicon.ico'))); 
 app.use(app.router);
 
 // development only

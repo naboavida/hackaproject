@@ -12,6 +12,57 @@ DROP TABLE parameters;
 DROP TABLE indicators;
 DROP TABLE points;
 DROP TABLE projects;
+DROP TABLE organizations_projects;
+DROP TABLE users;
+DROP TABLE organizations;
+
+
+
+
+CREATE TABLE organizations
+(
+  oid serial NOT NULL,
+  name character varying(200) NOT NULL,
+  code text,
+  CONSTRAINT organizations_pkey PRIMARY KEY (oid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE organizations
+  OWNER TO postgres;
+
+
+
+CREATE TABLE users
+(
+  uid serial NOT NULL,
+  username character varying(50),
+  password text,
+  email character varying(100),
+  oid_org integer,
+  CONSTRAINT users_pkey PRIMARY KEY (uid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE users
+  OWNER TO postgres;
+
+
+
+CREATE TABLE organizations_projects
+(
+  oid_org integer,
+  pid_proj integer
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE organizations_projects
+  OWNER TO postgres;
+
+
 
 
 
@@ -132,3 +183,5 @@ WITH (
 );
 ALTER TABLE activities
   OWNER TO postgres;
+
+

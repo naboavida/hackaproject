@@ -604,7 +604,9 @@ exports.getProjectsUsername = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    client.query("select * from projects where pid in (select pid_proj from users_projects where uid_user = '"+uid+"');", function(err, result) {
+    // client.query("select * from projects where pid in (select pid_proj from users_projects where uid_user = '"+uid+"');", function(err, result) {
+    var q = "select pid, title, area, location from organizations_projects, users, projects where users.oid_org = organizations_projects.oid_org and projects.pid = organizations_projects.pid_proj and uid = "+uid;
+    client.query(q, function(err, result) {
       if(err) {
         return console.error('error running query', err);
       }
@@ -698,7 +700,8 @@ exports.addProjectUsername = function(req, res){
 
         pointDashboards.push({"id": req.body.id, "pointIndicators":[] });
 
-        var q2 = "INSERT INTO users_projects(uid_user, pid_proj) VALUES('"+uid+"', "+req.body.pid+");";
+        // var q2 = "INSERT INTO users_projects(uid_user, pid_proj) VALUES('"+uid+"', "+req.body.pid+");";
+        var q2 = "INSERT INTO organizations_projects(oid_org, pid_proj) VALUES(  (select distinct oid_org from users where uid = "+uid+"), "+req.body.pid+");";
         client.query(q2, function(err, result) {
           if(err) {
             return console.error('error running query', err);
@@ -787,9 +790,10 @@ exports.getDashboard = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point IS NULL and pid_proj in (select pid_proj from users_projects where uid_user = "+uid+");";
+    // var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point IS NULL and pid_proj in (select pid_proj from users_projects where uid_user = "+uid+");";
     // NA QUERY TB QUEREMOS EVITAR OS QUE TÊM POINTID! -- done!
     // melhor query? select * from indicators, users_projects where indicators.pid_proj = users_projects.pid_proj and indicators.pid_proj = 1 and pointid_point IS NULL and uid_user = 1
+    var q = "select * from indicators where pid_proj = "+pid+" and pointid_point IS NULL and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+")"
 
     client.query(q, function(err, result) {
       if(err) {
@@ -825,6 +829,7 @@ exports.getDashboardPoint = function(req, res){
   console.log('API call: getDashboardPoint');
   var pid = req.params.pid;
   var pointid = req.params.pointid;
+  var uid = req.session.passport.user;
   console.log(pid + " " + pointid);
 
   var indicators = [];
@@ -836,8 +841,9 @@ exports.getDashboardPoint = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point = "+pointid+";";
+    var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point = "+pointid+" and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+");";
     // NA QUERY TB QUEREMOS EVITAR OS QUE TÊM POINTID!
+    console.log(q);
 
     client.query(q, function(err, result) {
       if(err) {
@@ -877,6 +883,7 @@ exports.getDashboardPoint = function(req, res){
 exports.getIndicator = function(req, res){
   console.log('API call: getIndicator');
   var iid = req.params.iid;
+  var uid = req.session.passport.user;
   var result = {};
 
   // var indicator = findIndicatorById(iid);
@@ -889,7 +896,8 @@ exports.getIndicator = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    var q = "SELECT * FROM indicators WHERE iid = "+iid+";";
+    // var q = "SELECT * FROM indicators WHERE iid = "+iid+" ;";
+    var q = "select * from indicators where iid = "+iid+" and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+")";
     client.query(q, function(err, res1) {
       if(err) {
         return console.error('error running query', err);
@@ -899,7 +907,7 @@ exports.getIndicator = function(req, res){
         console.log(row);
         result.indicator = row;
 
-        var q2 = "SELECT * FROM parameters WHERE iid_ind = "+iid+";";
+        var q2 = "select parameters.parmid, parameters.title, parameters.value, parameters.unit, parameters.alarm, parameters.objective, parameters.min, parameters.max, parameters.readings, parameters.iid_ind from parameters, indicators where parameters.iid_ind=indicators.iid and iid_ind = "+iid+" and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+")";
         console.log("QUERY 2 IS: "+q2);
         client.query(q2, function(err, res2) {
           if(err) {
@@ -932,6 +940,7 @@ exports.getPointIndicator = function(req, res){
   console.log('API call: getPointIndicator');
   var iid = req.params.pointiid;
   var pointid = req.params.pointid;
+  var uid = req.session.passport.user;
   var result = {};
 
 
@@ -944,7 +953,8 @@ exports.getPointIndicator = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    var q = "SELECT * FROM indicators WHERE iid = "+iid+";";
+    // var q = "SELECT * FROM indicators WHERE iid = "+iid+";";
+    var q = "select * from indicators where iid = "+iid+" and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+")";
     client.query(q, function(err, res1) {
       if(err) {
         return console.error('error running query', err);
@@ -954,7 +964,8 @@ exports.getPointIndicator = function(req, res){
         console.log(row);
         result.indicator = row;
 
-        var q2 = "SELECT * FROM parameters WHERE iid_ind = "+iid+";";
+        // var q2 = "SELECT * FROM parameters WHERE iid_ind = "+iid+";";
+        var q2 = "select parameters.parmid, parameters.title, parameters.value, parameters.unit, parameters.alarm, parameters.objective, parameters.min, parameters.max, parameters.readings, parameters.iid_ind from parameters, indicators where parameters.iid_ind=indicators.iid and iid_ind = "+iid+" and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+")";
         console.log("QUERY 2 IS: "+q2);
         client.query(q2, function(err, res2) {
           if(err) {
@@ -1076,6 +1087,7 @@ exports.addPointIndicator = function(req, res){
       return console.error('could not connect to postgres', err);
     }
     var q = "INSERT INTO indicators(title, unit, alarm, value, readings, pid_proj, pointid_point) VALUES ('"+req.body.title+"', '"+req.body.unit+"', '"+req.body.alarm+"', "+req.body.value+", ARRAY["+req.body.value+"], "+pid+", "+pointid+") RETURNING iid;";
+    console.log(q);
     client.query(q, function(err, result) {
       if(err) {
         return console.error('error running query', err);
@@ -1133,6 +1145,7 @@ exports.getParameter = function(req, res){
   console.log('API call: getParameter');
   var iid = req.params.iid;
   var parmid = req.params.parmid;
+  var uid = req.session.passport.user;
   var result = {};
 
   var client = new pg.Client(conString);
@@ -1140,7 +1153,8 @@ exports.getParameter = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    var q = "SELECT * FROM parameters WHERE parmid = "+parmid+";";
+    // var q = "SELECT * FROM parameters WHERE parmid = "+parmid+";";
+    var q = "select parameters.parmid, parameters.title, parameters.value, parameters.unit, parameters.alarm, parameters.objective, parameters.min, parameters.max, parameters.readings, parameters.iid_ind from parameters, indicators where parameters.iid_ind=indicators.iid and parmid="+parmid+" and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+")"
     client.query(q, function(err, res1) {
       if(err) {
         return console.error('error running query', err);
@@ -1213,6 +1227,7 @@ exports.getParameterPoint = function(req, res){
   console.log('API call: getParameterPoint');
   var iid = req.params.pointiid;
   var parmid = req.params.pointparmid;
+  var uid = req.session.passport.user;
   var result = {};
 
 
@@ -1222,7 +1237,8 @@ exports.getParameterPoint = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    var q = "SELECT * FROM parameters WHERE parmid = "+parmid+";";
+    // var q = "SELECT * FROM parameters WHERE parmid = "+parmid+";";
+    var q = "select parameters.parmid, parameters.title, parameters.value, parameters.unit, parameters.alarm, parameters.objective, parameters.min, parameters.max, parameters.readings, parameters.iid_ind from parameters, indicators where parameters.iid_ind=indicators.iid and parmid="+parmid+" and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+")"
     client.query(q, function(err, res1) {
       if(err) {
         return console.error('error running query', err);
@@ -1366,6 +1382,7 @@ exports.addParameterPoint = function(req, res){
 exports.geoapi = function(req, res){
   console.log('API call: geoapi');
   var pid = req.params.pid;
+  var uid = req.session.passport.user;
   // console.log(pid);
   // var loc = getLocationsByPId(pid);
   var loc = [];
@@ -1375,7 +1392,7 @@ exports.geoapi = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    client.query('SELECT * FROM points WHERE pid_proj = '+pid, function(err, result) {
+    client.query('SELECT * FROM points WHERE pid_proj = '+pid+' and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = '+uid+');', function(err, result) {
       if(err) {
         return console.error('error running query', err);
       }
@@ -1544,6 +1561,7 @@ exports.geoapiDeletePoint = function(req, res){
 exports.getActivities = function(req, res){
   console.log('API call: getActivities');
   var pid = req.params.pid;
+  var uid = req.session.passport.user;
   var activities_arr = [];
 
   var client = new pg.Client(conString);
@@ -1551,7 +1569,7 @@ exports.getActivities = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    client.query('SELECT * FROM activities WHERE pid_proj = '+pid+' AND pointid_point IS NULL', function(err, result) {
+    client.query('SELECT * FROM activities WHERE pid_proj = '+pid+' AND pointid_point IS NULL and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = '+uid+');', function(err, result) {
       if(err) {
         return console.error('error running query', err);
       }

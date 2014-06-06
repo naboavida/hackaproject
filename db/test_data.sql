@@ -7,10 +7,34 @@
 -- delete from projects
 
 
+INSERT INTO organizations(
+            name, code)
+    VALUES ('canecas', '123'),
+    ('casal', '456');
+
+INSERT INTO users(
+            username, password, email, oid_org)
+    VALUES ('naboavida', 'pass', 'naboavida@gmail.com', 1);
+
+INSERT INTO users(
+            username, password, email, oid_org)
+    VALUES ('jpsantos', 'pass', 'jpsantos@gmail.com', 2);
+
+
 
 INSERT INTO projects(
             title, area, location)
-    VALUES ('Water Collaboration', 123.5, 'São Tomé');
+    VALUES ('Water Collaboration', 123.5, 'São Tomé'),
+            ('Oilfields', 453.5, 'Texas, US');
+
+
+INSERT INTO organizations_projects(
+        oid_org, pid_proj)
+    VALUES (1, 1),
+            (2, 2);
+
+
+
     
 
 INSERT INTO points(

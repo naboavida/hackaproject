@@ -27,9 +27,9 @@ angular.module('myApp.controllers', []).
   });
 
 function IndexCtrl($scope, $http) {
-  $http.get('/api/posts').
+  $http.get('/api/user').
     success(function(data, status, headers, config) {
-      $scope.posts = data.posts;
+      $scope.username = data.username;
     });
 }
 
@@ -1224,33 +1224,38 @@ function AlertsCtrl($scope, $http, $timeout){
       });
     });
 
-  $scope.intervalFunction = function(){
-    $timeout(function() {
+  // $scope.intervalFunction = function(){
+  //   $timeout(function() {
       
-      $http.get('/api/alerts').
-        success(function(data, status){
-          //select * from parameters where value < min and value > max
-          $scope.alerts = [];
-          
-          console.log('read alerts');
-          console.log(data);
-          data.forEach(function(elem){
-            var str = '';
-            if(parseInt(elem.value) > parseInt(elem.max))
-              str = "Parameter "+elem.title+" has value ("+elem.value+") above the maximum value ("+elem.max+")";
-            else if(parseInt(elem.value) < parseInt(elem.min))
-              str = "Parameter "+elem.title+" is below ("+elem.value+") the minimum value ("+elem.min+")";
+  //     $http.get('/api/alerts').
+  //       success(function(data, status){
+  //         //select * from parameters where value < min and value > max
+  //         $scope.alerts = [];
 
-            if(elem.pointid != undefined && elem.pointid != null)
-              str += " on point "+elem.pointid;
-            elem.title = str;
-            $scope.alerts.push(elem);
-          });
-        });
+  //         console.log('read alerts');
+  //         console.log(data);
+  //         data.forEach(function(elem){
+  //           var str = '';
+  //           if(parseInt(elem.value) > parseInt(elem.max))
+  //             str = "Parameter "+elem.title+" has value ("+elem.value+") above the maximum value ("+elem.max+")";
+  //           else if(parseInt(elem.value) < parseInt(elem.min))
+  //             str = "Parameter "+elem.title+" is below ("+elem.value+") the minimum value ("+elem.min+")";
 
-      $scope.intervalFunction();
-    }, 2500)
-  };
+  //           if(elem.pointid != undefined && elem.pointid != null)
+  //             str += " on point "+elem.pointid;
+  //           elem.title = str;
+  //           $scope.alerts.push(elem);
+  //         });
+  //       });
 
-  $scope.intervalFunction();
+  //     $scope.intervalFunction();
+  //   }, 2500)
+  // };
+
+  // $scope.intervalFunction();
+}
+
+
+function LogoutCtrl($scope, $location){
+  $location.path('/');
 }

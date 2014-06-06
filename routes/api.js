@@ -532,6 +532,28 @@ function findIndexOfProjectByPid(pid){
 
 
 
+exports.getUser = function(req, res){
+  var client = new pg.Client(conString);
+  var uid = req.session.passport.user;
+
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query('SELECT * FROM users WHERE uid = '+uid, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      res.json(result.rows[0]);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+};
+
+
 // get
 exports.getProjects = function(req, res){
   // var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'}];
@@ -543,6 +565,46 @@ exports.getProjects = function(req, res){
       return console.error('could not connect to postgres', err);
     }
     client.query('SELECT * FROM projects', function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        // console.log(row);
+        // projects.push({"id":row.pid, "title":row.title, "location":row.location, "area":row.area});
+        // console.log("project added");
+        // console.log(projects);
+        dashboards.push({"id":row.pid, "indicators":[] });
+      })
+      projects = result.rows;
+      console.log("projects");
+      console.log(projects);
+      res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      client.end();
+    });
+  });
+  // res.json(projects);
+};
+
+
+
+
+exports.getProjectsUsername = function(req, res){
+  console.log("API call: getProjectsUsername");
+  var uid = req.session.passport.user;
+  console.log("uid: "+uid);
+
+  // var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'}];
+  projects = [];
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    client.query("select * from projects where pid in (select pid_proj from users_projects where uid_user = '"+uid+"');", function(err, result) {
       if(err) {
         return console.error('error running query', err);
       }
@@ -611,6 +673,64 @@ exports.addProject = function(req, res){
   
 };
 
+
+
+exports.addProjectUsername = function(req, res){
+  console.log('API call: addProjectUsername');
+  var uid = req.session.passport.user;
+
+  var client = new pg.Client(conString);
+  client.connect(function(err) {
+    if(err) {
+      return console.error('could not connect to postgres', err);
+    }
+    var q = "INSERT INTO projects(title, area, location) VALUES ('"+req.body.title+"', '"+req.body.area+"', '"+req.body.location+"') RETURNING pid;";
+    client.query(q, function(err, result) {
+      if(err) {
+        return console.error('error running query', err);
+      }
+      console.log("Number of results: "+result.rows.length);
+      result.rows.forEach(function(row){
+        console.log(row);
+        req.body.pid = row.pid;
+        projects.push(req.body);
+        dashboards.push({"id":req.body.id, "indicators":[] });
+
+        pointDashboards.push({"id": req.body.id, "pointIndicators":[] });
+
+        var q2 = "INSERT INTO users_projects(uid_user, pid_proj) VALUES('"+uid+"', "+req.body.pid+");";
+        client.query(q2, function(err, result) {
+          if(err) {
+            return console.error('error running query', err);
+          }
+          res.json(projects);
+          client.end();
+        });
+
+        
+        // projects.push({"id":row.pid, "title":row.title, "location":"m", "area":row.area});
+      })
+      // res.json(projects);
+      // console.log(result.rows[0].theTime);
+      //output: Tue Jan 15 2013 19:12:47 GMT-600 (CST)
+      
+    });
+  });
+
+
+
+  // req.body.id = findMaxProjectId()+1;
+  // console.log(req.body);
+  // projects.push({title:'New York', area:'231'});
+  
+
+  
+  // console.log(dashboards);
+
+  
+};
+
+
 exports.deleteProject = function(req, res){
   console.log('API call: deleteProject');
   var pid = req.params.pid;
@@ -653,6 +773,7 @@ exports.deleteProject = function(req, res){
 exports.getDashboard = function(req, res){
   console.log('API call: getDashboard');
   var pid = req.params.pid;
+  var uid = req.session.passport.user;
   var project = findProjectById(pid);
   // console.log('title is: '+title);
 
@@ -666,8 +787,9 @@ exports.getDashboard = function(req, res){
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point IS NULL;";
-    // NA QUERY TB QUEREMOS EVITAR OS QUE TÊM POINTID!
+    var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point IS NULL and pid_proj in (select pid_proj from users_projects where uid_user = "+uid+");";
+    // NA QUERY TB QUEREMOS EVITAR OS QUE TÊM POINTID! -- done!
+    // melhor query? select * from indicators, users_projects where indicators.pid_proj = users_projects.pid_proj and indicators.pid_proj = 1 and pointid_point IS NULL and uid_user = 1
 
     client.query(q, function(err, result) {
       if(err) {

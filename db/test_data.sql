@@ -12,6 +12,7 @@ INSERT INTO organizations(
     VALUES ('canecas', '123'),
     ('casal', '456');
 
+
 INSERT INTO users(
             username, password, email, oid_org)
     VALUES ('naboavida', 'pass', 'naboavida@gmail.com', 1);

@@ -76,7 +76,7 @@ var pg = require('pg');
 // var dbUrl = "tcp://postgres:maxtamaxta@localhost/nunoteste";
 var conString = "postgres://postgres:maxtamaxta@localhost/nunoteste";
 // var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
-// var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
+var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
 
 
 // var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'},

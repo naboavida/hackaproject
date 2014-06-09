@@ -13,6 +13,11 @@ var express = require('express'),
   LocalStrategy = require('passport-local').Strategy;
 
 
+var app = module.exports = express();
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
+
+
 
 var users = [
     { id: 1, username: 'naboavida', password: 'pass', email: 'naboavida@example.com' }
@@ -26,7 +31,7 @@ function refreshUsersFromDb(){
 	// var dbUrl = "tcp://postgres:maxtamaxta@localhost/nunoteste";
 	var conString = "postgres://postgres:maxtamaxta@localhost/nunoteste";
 	// var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
-	var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
+	// var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
 	
 	var client = new pg.Client(conString);
 	  // var uid = req.session.passport.user;
@@ -172,7 +177,8 @@ passport.use(new LocalStrategy(
 
 
 
-var app = module.exports = express();
+
+
 
 
 /**
@@ -321,11 +327,29 @@ app.get('*', routes.index);
  * Start Server
  */
 
-http.createServer(app).listen(app.get('port'), function () {
-  console.log('Express server listening on port ' + app.get('port'));
-});
+
+// // http.createServer(app).listen(app.get('port'), function () {
+// //   console.log('Express server listening on port ' + app.get('port'));
+// // });
+
+// var server = app.listen(app.get('port'), function () {
+//   console.log('Express server listening on port ' + app.get('port'));
+// });
+// var io = require('socket.io').listen(server);
+
+
+io.sockets.on('connection', require('./routes/socket'));
+
+
+
+
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/login');
 }
+
+
+server.listen(app.get('port'), function () {
+  console.log('Express server listening on port ' + app.get('port'));
+});

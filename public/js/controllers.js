@@ -363,13 +363,22 @@ function ParameterCtrl($scope, $http, $routeParams){
 };
 
 
-function ParameterPointCtrl($scope, $http, $routeParams){
+function ParameterPointCtrl($scope, $http, $routeParams, socket){
   console.log('ParameterPointCtrl');
+
+  socket.on('send:value', function (elem){
+    console.log("received value!");
+    if(elem.parmid == $scope.pointparmid)
+      $scope.parameter.value = elem.value;
+  });
+
+
   $scope.pid = $routeParams.pid;
   $scope.pointiid = $routeParams.pointiid;
   $scope.pointparmid = $routeParams.pointparmid;
   $scope.pointid = $routeParams.pointid;
-  // console.log('pid: '+$scope.pid + ' iid: ' + $scope.iid + ' parmid: '+$scope.parmid);
+  // console.log('pid: '+$scope.pid + ' iid: ' + $scope.iid + ' parmid: '+$scope.parmid+' pointid: '+$scope.pointid);
+  $scope.parameter = {};
 
   $http.get('/api/indicator/'+$scope.pointiid+'/'+$scope.pointid).
     success(function(data, status) {
@@ -431,16 +440,46 @@ function ParameterPointCtrl($scope, $http, $routeParams){
           console.log("yeah write parameterPointReadings!" + status);
           // console.log(data);
 
+          // socket
+          console.log($scope.readingForm.value);
+          console.log("pid: "+$scope.pid+" iid: "+$scope.pointiid+" parmid: "+$scope.pointparmid+" pointid: "+$scope.pointid);
+          // alert.pid}}/{{alert.iid}}/{{alert.parmid}}/{{alert.pointid
+            if(parseInt(data.value) < parseInt(data.min) || parseInt(data.value) > parseInt(data.max) ){
+              console.log("Emitting!!!");
+              socket.emit('send:alert', {
+                pid: $scope.pid,
+                iid: $scope.pointiid,
+                parmid: $scope.pointparmid,
+                pointid: $scope.pointid,
+                value: data.value,
+                alarm: data.alarm,
+                title: data.title,
+                min: data.min,
+                max: data.max
+              });
+            }
+
+          socket.emit('send:value', {
+            pid: $scope.pid,
+            iid: $scope.pointiid,
+            parmid: $scope.pointparmid,
+            pointid: $scope.pointid,
+            value: data.value
+          });
+
           $scope.parameter.value = data.value;
+          $scope.readingForm = {};
         }).
         error(function (data, status) {
           $scope.data = data || "Request failed";
         });
 
       // $scope.projects.push($scope.form);
-      $scope.readingForm = {};
+      
 
     }
+
+    
 
 
     $scope.submitNewPointMultipleReadings = function(){
@@ -1200,8 +1239,30 @@ function AddReadingCtrl($scope, $http){
 }
 
 
-function AlertsCtrl($scope, $http, $timeout){
+function AlertsCtrl($scope, $http, $timeout, socket){
   console.log('AlertsCtrl');
+
+  socket.on('send:alert', function (elem) {
+    var str = '';
+    console.log('elem');
+    console.log(elem);
+    if(parseInt(elem.value) > parseInt(elem.max))
+      str = "Parameter "+elem.title+" has value ("+elem.value+") above the maximum value ("+elem.max+")";
+    else if(parseInt(elem.value) < parseInt(elem.min))
+      str = "Parameter "+elem.title+" is below ("+elem.value+") the minimum value ("+elem.min+")";
+
+    if(elem.pointid != undefined && elem.pointid != null)
+      str += " on point "+elem.pointid;
+    elem.title = str;
+    // $scope.alerts.push(elem);
+
+    if(parseInt(elem.value) > parseInt(elem.max) || parseInt(elem.value) < parseInt(elem.min) )
+      $scope.alerts.unshift(elem);
+  });
+
+
+
+
   // $scope.alerts = [{"alid":1, "title":"pH value outside limits in Water Collaboration project in São Tomé"},
   //                  {"alid":2, "title":"Cleaning Biomass activity in two days (6th of July) in Point 1, São Tomé"},
   //                  {"alid":3, "title":"temperature value outside limits in Water Collaboration project in São Tomé"}];
@@ -1222,9 +1283,13 @@ function AlertsCtrl($scope, $http, $timeout){
         if(elem.pointid != undefined && elem.pointid != null)
           str += " on point "+elem.pointid;
         elem.title = str;
-        $scope.alerts.push(elem);
+        // $scope.alerts.push(elem);
+        $scope.alerts.unshift(elem);
       });
     });
+
+
+
 
   // $scope.intervalFunction = function(){
   //   $timeout(function() {

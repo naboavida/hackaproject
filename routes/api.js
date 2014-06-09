@@ -76,7 +76,7 @@ var pg = require('pg');
 // var dbUrl = "tcp://postgres:maxtamaxta@localhost/nunoteste";
 var conString = "postgres://postgres:maxtamaxta@localhost/nunoteste";
 // var conString = "postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com/d3bd4tetkfqefb";
-var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
+// var conString = 'postgres://ufjpppbpugidqy:o86ol2Bz1SqbV8bErgweMKRLLm@ec2-54-197-237-231.compute-1.amazonaws.com:5432/d3bd4tetkfqefb';
 
 
 // var projects = [{"id":0, "title":'Water Quality', "location": "São Tomé", "area":'123'},
@@ -1915,13 +1915,15 @@ exports.addParameterPointReadings = function(req, res){
         return console.error('error running query', err);
       }
       console.log("Number of results updateParameterPointReadings: "+result.rows.length);
-      var q2 = "UPDATE parameters SET value = "+req.body.value+" where parmid="+parmid+";";
+      var q2 = "UPDATE parameters SET value = "+req.body.value+" where parmid="+parmid+" RETURNING value, alarm, min, max, title;";
       client.query(q2, function(err, result2){
         if(err) {
           return console.error('error running query', err);
         }
+        console.log('result2.rows');
+        console.log(result2.rows);
         parameter.value = req.body.value;
-        res.json(parameter);
+        res.json(result2.rows[0]);
         client.end();
       });
 

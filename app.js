@@ -340,6 +340,13 @@ app.get('*', routes.index);
 
 io.sockets.on('connection', require('./routes/socket'));
 
+io.set('authorization', function(handshakeData, acceptFn){
+  console.log("socket::::::");
+  console.log(handshakeData.cookie);
+  acceptFn(null, true);
+});
+
+
 
 
 

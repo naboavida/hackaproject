@@ -1256,8 +1256,24 @@ function AlertsCtrl($scope, $http, $timeout, socket){
     elem.title = str;
     // $scope.alerts.push(elem);
 
-    if(parseInt(elem.value) > parseInt(elem.max) || parseInt(elem.value) < parseInt(elem.min) )
-      $scope.alerts.unshift(elem);
+    $http.get('/api/projects').
+      success(function(data, status) {
+        // console.log("yeah read!");
+        // console.log(data);
+        $scope.projects = data;
+        for (var i = 0; i < data.length; i++) {
+          console.log("data pid: "+data[i].pid+" elem pid"+elem.pid+ " ; data[i].pid == elem.pid: "+(data[i].pid == elem.pid))
+          if (data[i].pid == elem.pid) {
+            if( parseInt(elem.value) > parseInt(elem.max) || parseInt(elem.value) < parseInt(elem.min) )
+               $scope.alerts.unshift(elem);
+          }
+        }
+      }).
+      error(function (data, status) {
+        $scope.data = data || "Request failed";
+      });
+
+    
   });
 
 

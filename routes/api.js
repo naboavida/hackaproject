@@ -2051,7 +2051,7 @@ exports.getOrderedPointValuesOfParameter = function(req, res){
     }
     // var q = "SELECT * FROM indicators WHERE pid_proj = "+pid+" and pointid_point = "+pointid+";";
     // var q = "select pointid_point as pointid, x, y, parameters.value from parameters, indicators, points where iid_ind = iid and indicators.pointid_point = points.pointid and indicators.pid_proj = "+pid+" and pointid_point is not null and parameters.title = (select title from parameters where parmid="+parmid+");";
-    var q = "select pointid_point as pointid, x, y, parameters.value from parameters, indicators, points where iid_ind = iid and indicators.pointid_point = points.pointid and indicators.pid_proj = "+pid+" and pointid_point is not null and parameters.title = (select title from parameters where parmid="+parmid+") and indicators.pid_proj in (select pid_proj from users_projects where uid_user = "+uid+");";
+    var q = "select pointid_point as pointid, x, y, parameters.value from parameters, indicators, points where iid_ind = iid and indicators.pointid_point = points.pointid and indicators.pid_proj = "+pid+" and pointid_point is not null and parameters.title = (select title from parameters where parmid="+parmid+") and indicators.pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+");";
     // NA QUERY TB QUEREMOS EVITAR OS QUE TÊM POINTID!
 
     client.query(q, function(err, result) {
@@ -2088,14 +2088,17 @@ exports.getOrderedPointValuesOfParameter = function(req, res){
 
 exports.getAlerts = function(req, res){
   console.log('API call: getAlerts');
-
+  var uid = req.session.passport.user;
+  console.log(uid);
 
   var client = new pg.Client(conString);
   client.connect(function(err) {
     if(err) {
       return console.error('could not connect to postgres', err);
     }
-    client.query("select parmid, iid, pid_proj as pid, pointid_point as pointid, parameters.title, parameters.value, parameters.min, parameters.max from parameters, indicators where parameters.iid_ind=indicators.iid and (parameters.value::double precision < parameters.min::double precision or parameters.value::double precision > parameters.max::double precision) and parameters.alarm='yes'", function(err, result) {
+    var q = "select parmid, iid, pid_proj as pid, pointid_point as pointid, parameters.title, parameters.value, parameters.min, parameters.max from parameters, indicators where parameters.iid_ind=indicators.iid and (parameters.value::double precision < parameters.min::double precision or parameters.value::double precision > parameters.max::double precision) and parameters.alarm='yes' and pid_proj in (select pid_proj from organizations_projects, users where organizations_projects.oid_org = users.oid_org and users.uid = "+uid+")";
+    console.log(q);
+    client.query(q, function(err, result) {
       if(err) {
         return console.error('error running query', err);
       }
